@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shaden Technology — Click Me</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+
+  <!-- Firebase v9 compat (CDN, no bundler needed) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --bg: #c8c8c8;
+      --accent: #1a1a1a;
+      --btn: #2e2e2e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg);
+      font-family: 'DM Mono', monospace;
+      transition: background-color 0.4s ease;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.4;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 10vw, 8rem);
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      line-height: 1;
+      text-shadow: 4px 4px 0px rgba(0,0,0,0.15);
+      transition: color 0.4s ease;
+      user-select: none;
+    }
+
+    .progress-wrap {
+      width: min(500px, 80vw);
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.6;
+      margin-bottom: 0.4rem;
+      transition: color 0.4s ease;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(0,0,0,0.15);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 999px;
+      transition: width 0.5s ease, background 0.4s ease;
+      width: 0%;
+    }
+
+    .counter {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1rem, 4vw, 2.5rem);
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      opacity: 0.55;
+      transition: color 0.4s ease;
+    }
+
+    .counter span {
+      opacity: 1;
+      font-size: 1.2em;
+    }
+
+    .btn {
+      position: relative;
+      background: var(--btn);
+      color: #f0f0f0;
+      border: none;
+      padding: 1.2rem 4rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.4s ease;
+      box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    }
+
+    .btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0px rgba(0,0,0,0.35);
+    }
+
+    .btn:active {
+      transform: translate(3px, 3px);
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+    }
+
+    .btn.pop {
+      animation: pop 0.15s ease;
+    }
+
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(0.93) translate(3px, 3px); }
+      100% { transform: scale(1); }
+    }
+
+    /* Ripple */
+    .ripple {
+      position: fixed;
+      border-radius: 50%;
+      width: 10px; height: 10px;
+      background: rgba(0,0,0,0.08);
+      transform: translate(-50%, -50%) scale(0);
+      animation: rippleOut 0.6s ease-out forwards;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes rippleOut {
+      to { transform: translate(-50%, -50%) scale(40); opacity: 0; }
+    }
+
+    .shade-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.4;
+      transition: color 0.4s ease;
+    }
+
+    .connecting {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.5;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.6; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="title">SHADEN<br>TECHNOLOGY</div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>GLOBAL CLICKS</span>
+      <span id="pct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="fill"></div>
+    </div>
+  </div>
+
+  <div class="counter">
+    <span id="count">—</span> / 1,000,000
+  </div>
+
+  <button class="btn" id="clickBtn" disabled>CLICK ME</button>
+
+  <div class="shade-label" id="shadeLabel">CONNECTING...</div>
+</div>
+
+<script>
+  // ============================================================
+  // 🔥 FIREBASE CONFIG — Replace with YOUR project's config
+  // Get it from: console.firebase.google.com → Project Settings
+  // ============================================================
+  const firebaseConfig = {
+    apiKey:            "YOUR_API_KEY",
+    authDomain:        "YOUR_PROJECT.firebaseapp.com",
+    databaseURL:       "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+    projectId:         "YOUR_PROJECT",
+    storageBucket:     "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId:             "YOUR_APP_ID"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const clickRef = db.ref('clicks');
+
+  // 50 Shades of Grey — from near-white to near-black
+  const shades = Array.from({length: 50}, (_, i) => {
+    const v = Math.round(240 - (i * (200 / 49)));
+    return `rgb(${v},${v},${v})`;
+  });
+
+  const GOAL = 1_000_000;
+  let currentCount = 0;
+
+  const btn       = document.getElementById('clickBtn');
+  const countEl   = document.getElementById('count');
+  const fillEl    = document.getElementById('fill');
+  const pctEl     = document.getElementById('pct');
+  const shadeEl   = document.getElementById('shadeLabel');
+  const body      = document.body;
+
+  function updateUI(count) {
+    currentCount = count;
+    countEl.textContent = count.toLocaleString();
+    const pct = Math.min((count / GOAL) * 100, 100);
+    fillEl.style.width = pct.toFixed(2) + '%';
+    pctEl.textContent  = pct.toFixed(2) + '%';
+
+    // Pick shade: cycle through 50 based on count
+    const idx = count % 50;
+    const shade = shades[idx];
+    body.style.setProperty('--bg', shade);
+
+    // Flip accent color for readability
+    const brightness = parseInt(shade.match(/\d+/)[0]);
+    const accent = brightness < 128 ? '#f0f0f0' : '#1a1a1a';
+    body.style.setProperty('--accent', accent);
+    body.style.setProperty('--btn', brightness < 128 ? '#f0f0f0' : '#1a1a1a');
+
+    const shadeNum = 50 - idx; // 50 (light) → 1 (dark)
+    shadeEl.textContent = `SHADE ${String(idx + 1).padStart(2,'0')} OF 50`;
+  }
+
+  // Listen for real-time updates (all visitors see this)
+  clickRef.on('value', snap => {
+    const val = snap.val() || 0;
+    updateUI(val);
+    btn.disabled = false;
+    shadeEl.textContent = `SHADE ${String((val % 50) + 1).padStart(2,'0')} OF 50`;
+  });
+
+  // Handle click
+  btn.addEventListener('click', (e) => {
+    // Ripple effect
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    ripple.style.left = e.clientX + 'px';
+    ripple.style.top  = e.clientY + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 700);
+
+    // Button pop
+    btn.classList.remove('pop');
+    void btn.offsetWidth;
+    btn.classList.add('pop');
+
+    // Atomic increment — safe for concurrent users
+    clickRef.transaction(current => (current || 0) + 1);
+  });
+</script>
+</body>
+</html>
