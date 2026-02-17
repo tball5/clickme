@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>The Garage — Click Me</title>
+  <title>The Garage</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap" rel="stylesheet"/>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -19,12 +19,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding: 3rem 1rem 4rem;
       background-color: #c8c8c8;
       font-family: 'DM Mono', monospace;
       transition: background-color 0.4s ease;
-      overflow: hidden;
       cursor: crosshair;
+      overflow-x: hidden;
     }
 
     body::before {
@@ -45,8 +46,11 @@
       flex-direction: column;
       align-items: center;
       gap: 2rem;
+      width: 100%;
+      max-width: 600px;
     }
 
+    /* ── TITLE ── */
     .title {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(3rem, 10vw, 8rem);
@@ -58,8 +62,9 @@
       user-select: none;
     }
 
+    /* ── PROGRESS ── */
     .progress-wrap {
-      width: min(500px, 80vw);
+      width: 100%;
     }
 
     .progress-label {
@@ -90,6 +95,7 @@
       width: 0%;
     }
 
+    /* ── COUNTER ── */
     .counter {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(1rem, 4vw, 2.5rem);
@@ -104,13 +110,14 @@
       font-size: 1.2em;
     }
 
+    /* ── CLICK BUTTON ── */
     .btn {
       background: #2e2e2e;
       color: #f0f0f0;
       border: none;
-      padding: 1.2rem 4rem;
+      padding: 1.2rem 3rem;
       font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-size: clamp(1.3rem, 4vw, 2.2rem);
       letter-spacing: 0.2em;
       cursor: pointer;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.4s ease;
@@ -138,6 +145,231 @@
       100% { transform: scale(1); }
     }
 
+    /* ── SHADE LABEL ── */
+    .shade-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      opacity: 0.4;
+      transition: color 0.4s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; }
+      50%       { opacity: 0.6; }
+    }
+
+    .connecting {
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(0,0,0,0.15);
+      transition: background 0.4s ease;
+    }
+
+    /* ── CHAT BOX ── */
+    .chat-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .chat-header {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.2em;
+      color: #1a1a1a;
+      text-align: left;
+      transition: color 0.4s ease;
+    }
+
+    .chat-messages {
+      width: 100%;
+      height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.12);
+      transition: background 0.4s ease, border-color 0.4s ease;
+      cursor: default;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.2);
+      border-radius: 999px;
+    }
+
+    .chat-empty {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      opacity: 0.3;
+      text-align: center;
+      margin: auto;
+    }
+
+    .chat-msg {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.5rem 0.6rem;
+      background: rgba(255,255,255,0.25);
+      border-left: 2px solid rgba(0,0,0,0.15);
+      transition: background 0.3s ease;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-msg:hover {
+      background: rgba(255,255,255,0.4);
+    }
+
+    .msg-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .msg-meta {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      opacity: 0.4;
+    }
+
+    .msg-text {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: #1a1a1a;
+      word-break: break-word;
+      transition: color 0.4s ease;
+    }
+
+    .msg-delete {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #1a1a1a;
+      opacity: 0.2;
+      font-size: 0.75rem;
+      padding: 0.1rem 0.3rem;
+      transition: opacity 0.2s ease;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .msg-delete:hover {
+      opacity: 0.7;
+    }
+
+    /* ── CHAT INPUT ── */
+    .chat-input-wrap {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .chat-name-input {
+      width: 130px;
+      flex-shrink: 0;
+      background: rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.15);
+      color: #1a1a1a;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.65rem 0.75rem;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.4s ease;
+      cursor: text;
+    }
+
+    .chat-name-input::placeholder {
+      color: #1a1a1a;
+      opacity: 0.3;
+    }
+
+    .chat-name-input:focus {
+      border-color: rgba(0,0,0,0.4);
+      background: rgba(255,255,255,0.3);
+    }
+
+    .chat-text-input {
+      flex: 1;
+      background: rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.15);
+      color: #1a1a1a;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.65rem 0.75rem;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.4s ease;
+      cursor: text;
+    }
+
+    .chat-text-input::placeholder {
+      color: #1a1a1a;
+      opacity: 0.3;
+    }
+
+    .chat-text-input:focus {
+      border-color: rgba(0,0,0,0.4);
+      background: rgba(255,255,255,0.3);
+    }
+
+    .chat-send-btn {
+      background: #2e2e2e;
+      color: #f0f0f0;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      flex-shrink: 0;
+    }
+
+    .chat-send-btn:hover {
+      opacity: 0.85;
+      transform: translate(-1px, -1px);
+    }
+
+    .chat-send-btn:active {
+      transform: translate(1px, 1px);
+    }
+
+    .chat-count {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      opacity: 0.35;
+      text-align: right;
+      transition: color 0.4s ease;
+    }
+
+    /* ── RIPPLE ── */
     .ripple {
       position: fixed;
       border-radius: 50%;
@@ -156,31 +388,16 @@
         opacity: 0;
       }
     }
-
-    .shade-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: #1a1a1a;
-      opacity: 0.4;
-      transition: color 0.4s ease;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.2; }
-      50% { opacity: 0.6; }
-    }
-
-    .connecting {
-      animation: pulse 1.2s ease-in-out infinite;
-    }
   </style>
 </head>
 <body>
 
 <div class="container">
+
+  <!-- TITLE -->
   <div class="title" id="title">THE<br>GARAGE</div>
 
+  <!-- PROGRESS BAR -->
   <div class="progress-wrap">
     <div class="progress-label" id="progressLabel">
       <span>GLOBAL CLICKS</span>
@@ -191,13 +408,38 @@
     </div>
   </div>
 
+  <!-- COUNTER -->
   <div class="counter" id="counter">
     <span id="count">0</span> / 1,000,000
   </div>
 
+  <!-- CLICK BUTTON -->
   <button class="btn" id="clickBtn" disabled>CLICK ME, HOMIE!</button>
 
+  <!-- SHADE LABEL -->
   <div class="shade-label connecting" id="shadeLabel">CONNECTING...</div>
+
+  <!-- DIVIDER -->
+  <div class="divider" id="divider"></div>
+
+  <!-- CHAT SECTION -->
+  <div class="chat-section">
+    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+      <div class="chat-header" id="chatHeader">CHAT BOX</div>
+      <div class="chat-count" id="chatCount"></div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-empty" id="chatEmpty">NO MESSAGES YET. BE THE FIRST.</div>
+    </div>
+
+    <div class="chat-input-wrap">
+      <input class="chat-name-input" id="nameInput" type="text" placeholder="YOUR NAME" maxlength="20" autocomplete="off"/>
+      <input class="chat-text-input" id="msgInput"  type="text" placeholder="SAY SOMETHING..." maxlength="200" autocomplete="off"/>
+      <button class="chat-send-btn" id="sendBtn">SEND</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -214,9 +456,11 @@
 
   firebase.initializeApp(firebaseConfig);
 
-  var db = firebase.database();
-  var clickRef = db.ref('clicks');
+  var db        = firebase.database();
+  var clickRef  = db.ref('clicks');
+  var msgRef    = db.ref('messages');
 
+  /* ── 50 SHADES ── */
   var shades = [];
   for (var i = 0; i < 50; i++) {
     var v = Math.round(240 - (i * (200 / 49)));
@@ -224,7 +468,9 @@
   }
 
   var GOAL = 1000000;
+  var currentAccent = '#1a1a1a';
 
+  /* ── DOM REFS ── */
   var btn          = document.getElementById('clickBtn');
   var countEl      = document.getElementById('count');
   var fillEl       = document.getElementById('fill');
@@ -233,27 +479,54 @@
   var titleEl      = document.getElementById('title');
   var counterEl    = document.getElementById('counter');
   var progressLbl  = document.getElementById('progressLabel');
+  var dividerEl    = document.getElementById('divider');
+  var chatHeader   = document.getElementById('chatHeader');
+  var chatCount    = document.getElementById('chatCount');
+  var chatMessages = document.getElementById('chatMessages');
+  var chatEmpty    = document.getElementById('chatEmpty');
+  var nameInput    = document.getElementById('nameInput');
+  var msgInput     = document.getElementById('msgInput');
+  var sendBtn      = document.getElementById('sendBtn');
 
+  /* ── UPDATE CLICK UI ── */
   function updateUI(count) {
     countEl.textContent = count.toLocaleString();
 
     var pct = Math.min((count / GOAL) * 100, 100);
     fillEl.style.width = pct.toFixed(2) + '%';
-    pctEl.textContent = pct.toFixed(2) + '%';
+    pctEl.textContent  = pct.toFixed(2) + '%';
 
-    var idx = count % 50;
+    var idx        = count % 50;
     var brightness = shades[idx];
-    var bg = 'rgb(' + brightness + ',' + brightness + ',' + brightness + ')';
+    var bg         = 'rgb(' + brightness + ',' + brightness + ',' + brightness + ')';
     document.body.style.backgroundColor = bg;
 
     var accent = brightness < 128 ? '#f0f0f0' : '#1a1a1a';
-    var btnBg   = brightness < 128 ? '#e0e0e0' : '#2e2e2e';
-    var btnTxt  = brightness < 128 ? '#1a1a1a' : '#f0f0f0';
+    var btnBg  = brightness < 128 ? '#e0e0e0' : '#2e2e2e';
+    var btnTxt = brightness < 128 ? '#1a1a1a' : '#f0f0f0';
+    currentAccent = accent;
 
     titleEl.style.color     = accent;
     counterEl.style.color   = accent;
     shadeEl.style.color     = accent;
     fillEl.style.background = accent;
+    chatHeader.style.color  = accent;
+    chatCount.style.color   = accent;
+    dividerEl.style.background = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
+
+    var inputBg    = brightness < 128 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+    var inputBdr   = brightness < 128 ? 'rgba(255,255,255,0.2)'  : 'rgba(0,0,0,0.15)';
+    nameInput.style.background   = inputBg;
+    nameInput.style.borderColor  = inputBdr;
+    nameInput.style.color        = accent;
+    msgInput.style.background    = inputBg;
+    msgInput.style.borderColor   = inputBdr;
+    msgInput.style.color         = accent;
+    chatMessages.style.background   = brightness < 128 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+    chatMessages.style.borderColor  = inputBdr;
+
+    sendBtn.style.background = btnBg;
+    sendBtn.style.color      = btnTxt;
 
     var labelSpans = progressLbl.querySelectorAll('span');
     for (var s = 0; s < labelSpans.length; s++) {
@@ -267,6 +540,7 @@
     shadeEl.textContent = 'SHADE ' + String(idx + 1).padStart(2, '0') + ' OF 50';
   }
 
+  /* ── CLICK LISTENER ── */
   clickRef.on('value', function(snap) {
     var val = snap.val();
     if (val === null) { val = 0; }
@@ -291,6 +565,125 @@
     clickRef.transaction(function(current) {
       return (current || 0) + 1;
     });
+  });
+
+  /* ── CHAT ── */
+  var MAX_MESSAGES = 100;
+
+  function timeAgo(ts) {
+    var diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 60)  { return diff + 's ago'; }
+    if (diff < 3600){ return Math.floor(diff / 60) + 'm ago'; }
+    if (diff < 86400){ return Math.floor(diff / 3600) + 'h ago'; }
+    return Math.floor(diff / 86400) + 'd ago';
+  }
+
+  function renderMessages(msgs) {
+    while (chatMessages.firstChild) {
+      chatMessages.removeChild(chatMessages.firstChild);
+    }
+
+    if (!msgs || msgs.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'chat-empty';
+      empty.id = 'chatEmpty';
+      empty.textContent = 'NO MESSAGES YET. BE THE FIRST.';
+      chatMessages.appendChild(empty);
+      chatCount.textContent = '';
+      return;
+    }
+
+    chatCount.textContent = msgs.length + ' / ' + MAX_MESSAGES + ' MESSAGES';
+
+    for (var i = 0; i < msgs.length; i++) {
+      (function(msg) {
+        var wrap = document.createElement('div');
+        wrap.className = 'chat-msg';
+
+        var body = document.createElement('div');
+        body.className = 'msg-body';
+
+        var meta = document.createElement('div');
+        meta.className = 'msg-meta';
+        meta.textContent = (msg.name || 'ANON') + '  ·  ' + timeAgo(msg.ts);
+
+        var text = document.createElement('div');
+        text.className = 'msg-text';
+        text.textContent = msg.text;
+
+        var del = document.createElement('button');
+        del.className = 'msg-delete';
+        del.textContent = '✕';
+        del.title = 'Delete message';
+        del.addEventListener('click', function() {
+          msgRef.child(msg.key).remove();
+        });
+
+        body.appendChild(meta);
+        body.appendChild(text);
+        wrap.appendChild(body);
+        wrap.appendChild(del);
+        chatMessages.appendChild(wrap);
+      })(msgs[i]);
+    }
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  msgRef.on('value', function(snap) {
+    var data = snap.val();
+    if (!data) {
+      renderMessages([]);
+      return;
+    }
+
+    var msgs = [];
+    var keys = Object.keys(data);
+    for (var k = 0; k < keys.length; k++) {
+      var item = data[keys[k]];
+      item.key = keys[k];
+      msgs.push(item);
+    }
+
+    msgs.sort(function(a, b) { return a.ts - b.ts; });
+
+    renderMessages(msgs);
+  });
+
+  function sendMessage() {
+    var name = nameInput.value.trim().substring(0, 20) || 'ANON';
+    var text = msgInput.value.trim().substring(0, 200);
+    if (!text) { return; }
+
+    msgRef.once('value', function(snap) {
+      var data = snap.val();
+      var count = data ? Object.keys(data).length : 0;
+
+      if (count >= MAX_MESSAGES) {
+        var keys = Object.keys(data);
+        var msgs = [];
+        for (var k = 0; k < keys.length; k++) {
+          msgs.push({ key: keys[k], ts: data[keys[k]].ts });
+        }
+        msgs.sort(function(a, b) { return a.ts - b.ts; });
+        msgRef.child(msgs[0].key).remove();
+      }
+
+      msgRef.push({
+        name: name,
+        text: text,
+        ts: Date.now()
+      });
+
+      msgInput.value = '';
+      msgInput.focus();
+    });
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+
+  msgInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { sendMessage(); }
   });
 </script>
 </body>
