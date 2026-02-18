@@ -877,7 +877,7 @@
       <button class="pong-pause-btn" id="pongPauseBtn" style="display:none;">PAUSE</button>
     </div>
     <div class="pong-wrap">
-      <canvas id="gameCanvas" width="400" height="600"></canvas>
+      <canvas id="gameCanvas" width="400" height="500"></canvas>
       <div class="pong-info">
         <span id="gameLeft">YOU: 0</span>
         <span class="pong-start-msg" id="pongMsg">CLICK TO START · MOUSE OR ↑↓ KEYS</span>
@@ -1429,7 +1429,7 @@
   var activeGame   = 'pong'; /* 'pong' or 'hoops' */
 
   /* canvas dims — vertical */
-  var CW = 400, CH = 600;
+  var CW = 400, CH = 500;
 
   /* ── PONG VARS ── */
   var PADDLE_W = 70, PADDLE_H = 12, BALL_SIZE = 8, WIN_SCORE = 7;
@@ -1443,16 +1443,311 @@
   var touchX      = null;
   var keysDown    = {};
 
-  /* ── HOOPS VARS ── */
-  var hoopsState  = 'idle';
-  var hoopsRaf    = null;
-  var shots = 0, makes = 0;
-  var hBall       = { x: CW/2, y: CH - 80, r: 18, vx: 0, vy: 0, flying: false };
-  var hoop        = { x: CW/2, y: 100, w: 70, rimR: 8 };
-  var dragStart   = null;
-  var swishFrames = 0;
-  var missFrames  = 0;
-  var ballResting = true;
+  function drawHoops() {
+    ctx.fillStyle = pongPageBg;
+    ctx.fillRect(0, 0, CW, CH);
+
+    var hx = hoop.x;
+    var hy = hoop.y;
+    var hw = hoop.w;        /* inner hoop width */
+    var rr = hoop.rimR;     /* rim tube radius */
+    var leftRimX  = hx - hw/2;
+    var rightRimX = hx + hw/2;
+
+    /* ── BACKBOARD ── */
+    /* board body */
+    ctx.fillStyle = 'rgba(0,0,0,0.12)';
+    ctx.fillRect(hx - 62, hy - 52, 124, 68);
+    /* board border */
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth   = 3;
+    ctx.globalAlpha = 0.7;
+    ctx.strokeRect(hx - 62, hy - 52, 124, 68);
+    ctx.globalAlpha = 1;
+    /* inner target rectangle */
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth   = 2;
+    ctx.globalAlpha = 0.45;
+    ctx.strokeRect(hx - 22, hy - 14, 44, 26);
+    ctx.globalAlpha = 1;
+
+    /* ── RIM SUPPORT BRACKET ── */
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth   = 4;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(hx - 10, hy + 10);
+    ctx.lineTo(leftRimX, hy + 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(hx + 10, hy + 10);
+    ctx.lineTo(rightRimX, hy + 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    /* ── LEFT RIM ── */
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth   = rr * 2;
+    ctx.lineCap     = 'round';
+    ctx.globalAlpha = 0.85;
+    ctx.beginPath();
+    ctx.arc(leftRimX, hy, rr, Math.PI * 0.5, Math.PI * 1.5);
+    ctx.stroke();
+    /* flat inner face of left rim */
+    ctx.lineWidth   = rr * 1.5;
+    ctx.beginPath();
+    ctx.moveTo(leftRimX, hy - rr);
+    ctx.lineTo(leftRimX, hy + rr);
+    ctx.stroke();
+
+    /* ── RIGHT RIM ── */
+    ctx.beginPath();
+    ctx.arc(rightRimX, hy, rr, Math.PI * 1.5, Math.PI * 0.5);
+    ctx.stroke();
+    ctx.lineWidth   = rr * 1.5;
+    ctx.beginPath();
+    ctx.moveTo(rightRimX, hy - rr);
+    ctx.lineTo(rightRimX, hy + rr);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.lineCap = 'butt';
+
+    /* ── NET ── */
+    var netTop  = hy + rr;
+    var netBot  = hy + 52;
+    var netL    = leftRimX  + rr;
+    var netR    = rightRimX - rr;
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth   = 1.2;
+    ctx.globalAlpha = 0.3;
+    /* vertical strands */
+    var strands = 6;
+    for (var ns = 0; ns <= strands; ns++) {
+      var t      = ns / strands;
+      var topNX  = netL + (netR - netL) * t;
+      var botNX  = (netL + netR) / 2 + ((topNX - (netL + netR)/2) * 0.5);
+      ctx.beginPath();
+      ctx.moveTo(topNX, netTop);
+      ctx.quadraticCurveTo(topNX, netTop + (netBot - netTop) * 0.5, botNX, netBot);
+      ctx.stroke();
+    }
+    /* horizontal strands */
+    for (var nh = 1; nh <= 4; nh++) {
+      var nt    = nh / 5;
+      var ny    = netTop + (netBot - netTop) * nt;
+      var slack = nh * 2.5;
+      var nL    = netL  + (((netL+netR)/2 - netL) * nt * 0.5) - slack;
+      var nR    = netR  - (((netL+netR)/2 - netR) * nt * 0.5) + slack;
+      ctx.beginPath();
+      ctx.moveTo(nL, ny);
+      ctx.lineTo(nR, ny);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    /* ── SWISH / MISS TEXT ── */
+    ctx.textAlign = 'center';
+    if (swishFrames > 0) {
+      ctx.fillStyle   = '#1a1a1a';
+      ctx.globalAlpha = Math.min(swishFrames / 20, 1) * 0.8;
+      ctx.font        = 'bold 32px "Bebas Neue", sans-serif';
+      ctx.letterSpacing = '0.1em';
+      ctx.fillText('SWISH!', CW/2, CH/2);
+      ctx.globalAlpha = 1;
+    }
+    if (missFrames > 0) {
+      ctx.fillStyle   = '#1a1a1a';
+      ctx.globalAlpha = Math.min(missFrames / 20, 1) * 0.35;
+      ctx.font        = 'bold 24px "Bebas Neue", sans-serif';
+      ctx.fillText('BRICK', CW/2, CH/2);
+      ctx.globalAlpha = 1;
+    }
+
+    /* ── DRAG ARROW ── */
+    if (dragStart && !hBall.flying) {
+      var ddx = dragStart.curX - dragStart.startX;
+      var ddy = dragStart.curY - dragStart.startY;
+      if (Math.abs(ddx) > 3 || Math.abs(ddy) > 3) {
+        ctx.strokeStyle = '#1a1a1a';
+        ctx.globalAlpha = 0.25;
+        ctx.lineWidth   = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(hBall.x, hBall.y);
+        ctx.lineTo(hBall.x - ddx * 1.8, hBall.y - ddy * 1.8);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    /* ── BASKETBALL ── */
+    var bx = hBall.x, by = hBall.y, br = hBall.r;
+
+    /* main orange body */
+    var grad = ctx.createRadialGradient(bx - br*0.3, by - br*0.3, br*0.1, bx, by, br);
+    grad.addColorStop(0,   '#ff8c00');
+    grad.addColorStop(0.6, '#e05c00');
+    grad.addColorStop(1,   '#a03300');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(bx, by, br, 0, Math.PI * 2);
+    ctx.fill();
+
+    /* seam lines — black */
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth   = 1.5;
+    ctx.globalAlpha = 0.75;
+    /* vertical curved seam */
+    ctx.beginPath();
+    ctx.moveTo(bx, by - br);
+    ctx.bezierCurveTo(bx + br * 0.5, by - br * 0.3, bx + br * 0.5, by + br * 0.3, bx, by + br);
+    ctx.stroke();
+    /* opposite vertical seam */
+    ctx.beginPath();
+    ctx.moveTo(bx, by - br);
+    ctx.bezierCurveTo(bx - br * 0.5, by - br * 0.3, bx - br * 0.5, by + br * 0.3, bx, by + br);
+    ctx.stroke();
+    /* horizontal equator seam */
+    ctx.beginPath();
+    ctx.moveTo(bx - br, by);
+    ctx.bezierCurveTo(bx - br * 0.3, by - br * 0.45, bx + br * 0.3, by - br * 0.45, bx + br, by);
+    ctx.stroke();
+    /* lower curved seam */
+    ctx.beginPath();
+    ctx.moveTo(bx - br, by);
+    ctx.bezierCurveTo(bx - br * 0.3, by + br * 0.45, bx + br * 0.3, by + br * 0.45, bx + br, by);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    /* shine */
+    ctx.fillStyle   = 'rgba(255,255,255,0.18)';
+    ctx.beginPath();
+    ctx.arc(bx - br*0.28, by - br*0.28, br * 0.28, 0, Math.PI * 2);
+    ctx.fill();
+
+    /* ── IDLE HINT ── */
+    if (hoopsState === 'idle' && !hBall.flying) {
+      ctx.fillStyle   = '#1a1a1a';
+      ctx.globalAlpha = 0.25;
+      ctx.font        = '11px "DM Mono", monospace';
+      ctx.textAlign   = 'center';
+      ctx.fillText('DRAG BALL & RELEASE TO SHOOT', CW/2, CH - 14);
+      ctx.globalAlpha = 1;
+    }
+    ctx.textAlign = 'left';
+  }
+
+  function hoopsFlick(touchEvt) {
+    if (!dragStart || hBall.flying) { dragStart = null; return; }
+    var dx = dragStart.curX - dragStart.startX;
+    var dy = dragStart.curY - dragStart.startY;
+    if (Math.abs(dx) < 4 && Math.abs(dy) < 4) { dragStart = null; return; }
+    /* flip direction — flick opposite of drag */
+    var power = Math.min(Math.sqrt(dx*dx + dy*dy), 200);
+    var angle = Math.atan2(dy, dx);
+    hBall.vx    = -Math.cos(angle) * power * 0.11;
+    hBall.vy    = -Math.sin(angle) * power * 0.11;
+    /* clamp so ball always has enough upward force */
+    if (hBall.vy > -4) { hBall.vy = -4; }
+    hBall.flying = true;
+    ballResting  = false;
+    shots++;
+    dragStart    = null;
+    hoopsState   = 'flying';
+    updateHoopsScore();
+    if (hoopsRaf) { cancelAnimationFrame(hoopsRaf); }
+    hoopsRaf = requestAnimationFrame(hoopsLoop);
+  }
+
+  function updateHoopsScore() {
+    if (shots === 0) { gameLeftEl.textContent = ''; gameRightEl.textContent = ''; return; }
+    var pct = Math.round((makes / shots) * 100);
+    gameLeftEl.textContent  = makes + ' / ' + shots;
+    gameRightEl.textContent = pct + '%';
+  }
+
+  function hoopsLoop() {
+    if (!hBall.flying) { return; }
+
+    /* gravity */
+    hBall.vy += 0.3;
+    hBall.x  += hBall.vx;
+    hBall.y  += hBall.vy;
+
+    /* wall bounce */
+    if (hBall.x - hBall.r < 0)  { hBall.x = hBall.r;      hBall.vx *= -0.55; }
+    if (hBall.x + hBall.r > CW) { hBall.x = CW - hBall.r; hBall.vx *= -0.55; }
+
+    /* rim collision — left */
+    var leftRimX  = hoop.x - hoop.w/2;
+    var rightRimX = hoop.x + hoop.w/2;
+    var rimDL = Math.sqrt(Math.pow(hBall.x - leftRimX, 2) + Math.pow(hBall.y - hoop.y, 2));
+    if (rimDL < hBall.r + hoop.rimR) {
+      var angL = Math.atan2(hBall.y - hoop.y, hBall.x - leftRimX);
+      hBall.x = leftRimX  + Math.cos(angL) * (hBall.r + hoop.rimR + 1);
+      hBall.y = hoop.y    + Math.sin(angL) * (hBall.r + hoop.rimR + 1);
+      var spd = Math.sqrt(hBall.vx*hBall.vx + hBall.vy*hBall.vy);
+      hBall.vx = Math.cos(angL) * spd * 0.55;
+      hBall.vy = Math.sin(angL) * spd * 0.55;
+    }
+    /* rim collision — right */
+    var rimDR = Math.sqrt(Math.pow(hBall.x - rightRimX, 2) + Math.pow(hBall.y - hoop.y, 2));
+    if (rimDR < hBall.r + hoop.rimR) {
+      var angR = Math.atan2(hBall.y - hoop.y, hBall.x - rightRimX);
+      hBall.x = rightRimX + Math.cos(angR) * (hBall.r + hoop.rimR + 1);
+      hBall.y = hoop.y    + Math.sin(angR) * (hBall.r + hoop.rimR + 1);
+      var spd2 = Math.sqrt(hBall.vx*hBall.vx + hBall.vy*hBall.vy);
+      hBall.vx = Math.cos(angR) * spd2 * 0.55;
+      hBall.vy = Math.sin(angR) * spd2 * 0.55;
+    }
+
+    /* score — ball passes downward through hoop opening */
+    if (hBall.vy > 0 &&
+        hBall.y >= hoop.y &&
+        hBall.y <= hoop.y + 20 &&
+        hBall.x > leftRimX  + hoop.rimR + hBall.r * 0.4 &&
+        hBall.x < rightRimX - hoop.rimR - hBall.r * 0.4) {
+      makes++;
+      swishFrames = 35;
+      updateHoopsScore();
+    }
+
+    /* decay flashes */
+    if (swishFrames > 0) { swishFrames--; }
+    if (missFrames  > 0) { missFrames--;  }
+
+    /* out of bounds — reset */
+    if (hBall.y + hBall.r > CH + 30 || hBall.y + hBall.r < -60) {
+      if (swishFrames === 0) { missFrames = 28; }
+      resetHoopsBall();
+      return;
+    }
+
+    drawHoops();
+    if (hBall.flying) {
+      hoopsRaf = requestAnimationFrame(hoopsLoop);
+    }
+  }
+
+  function resetHoopsBall() {
+    hBall.x = CW/2; hBall.y = CH - 70;
+    hBall.vx = 0; hBall.vy = 0;
+    hBall.flying = false;
+    hoopsState   = 'idle';
+    if (swishFrames > 0 || missFrames > 0) {
+      /* keep drawing until flash fades */
+      var fadeLoop = function() {
+        if (swishFrames > 0) { swishFrames--; }
+        if (missFrames  > 0) { missFrames--;  }
+        drawHoops();
+        if (swishFrames > 0 || missFrames > 0) { requestAnimationFrame(fadeLoop); }
+      };
+      requestAnimationFrame(fadeLoop);
+    } else {
+      drawHoops();
+    }
+  }
 
   /* ── TOGGLE ── */
   btnPong.addEventListener('click', function() {
@@ -1743,211 +2038,6 @@
   function stopHoops() {
     hoopsState = 'idle';
     if (hoopsRaf) { cancelAnimationFrame(hoopsRaf); hoopsRaf = null; }
-  }
-
-  function hoopsFlick(touchEvt) {
-    if (!dragStart || hBall.flying) { dragStart = null; return; }
-    var dx = dragStart.curX - dragStart.startX;
-    var dy = dragStart.curY - dragStart.startY;
-    /* need upward flick (dy negative) */
-    if (Math.abs(dx) < 3 && Math.abs(dy) < 3) { dragStart = null; return; }
-    var power = Math.min(Math.sqrt(dx*dx + dy*dy), 180);
-    var angle = Math.atan2(dy, dx);
-    /* scale velocity */
-    hBall.vx    = Math.cos(angle) * power * 0.09;
-    hBall.vy    = Math.sin(angle) * power * 0.09;
-    hBall.flying = true;
-    ballResting  = false;
-    shots++;
-    dragStart   = null;
-    hoopsState  = 'flying';
-    updateHoopsScore();
-    if (hoopsRaf) { cancelAnimationFrame(hoopsRaf); }
-    hoopsRaf = requestAnimationFrame(hoopsLoop);
-  }
-
-  function updateHoopsScore() {
-    if (shots === 0) { gameLeftEl.textContent = ''; gameRightEl.textContent = ''; return; }
-    var pct = Math.round((makes / shots) * 100);
-    gameLeftEl.textContent  = makes + ' / ' + shots;
-    gameRightEl.textContent = pct + '%';
-  }
-
-  function drawHoops() {
-    ctx.fillStyle = pongPageBg;
-    ctx.fillRect(0, 0, CW, CH);
-
-    /* hoop backboard */
-    ctx.fillStyle = '#1a1a1a';
-    ctx.globalAlpha = 0.15;
-    ctx.fillRect(hoop.x - 55, hoop.y - 40, 110, 6);
-    ctx.globalAlpha = 1;
-
-    /* hoop rim — two circles */
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = 4;
-    ctx.beginPath();
-    ctx.arc(hoop.x - hoop.w/2, hoop.y, hoop.rimR, 0, Math.PI*2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(hoop.x + hoop.w/2, hoop.y, hoop.rimR, 0, Math.PI*2);
-    ctx.stroke();
-
-    /* net */
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = 1.5;
-    ctx.globalAlpha = 0.35;
-    var netTop  = hoop.y + hoop.rimR;
-    var netBot  = hoop.y + 50;
-    var leftX   = hoop.x - hoop.w/2 + hoop.rimR;
-    var rightX  = hoop.x + hoop.w/2 - hoop.rimR;
-    /* vertical net lines */
-    for (var n = 0; n <= 4; n++) {
-      var nx = leftX + (rightX - leftX) * (n/4);
-      var spread = (n === 0 || n === 4) ? 0 : (n === 1 || n === 3) ? -4 : 0;
-      ctx.beginPath();
-      ctx.moveTo(nx, netTop);
-      ctx.lineTo(nx + spread, netBot);
-      ctx.stroke();
-    }
-    /* horizontal net lines */
-    for (var m = 1; m <= 3; m++) {
-      var ny = netTop + (netBot - netTop) * (m/4);
-      var shrink = m * 3;
-      ctx.beginPath();
-      ctx.moveTo(leftX - shrink * 0.3, ny);
-      ctx.lineTo(rightX + shrink * 0.3, ny);
-      ctx.stroke();
-    }
-    ctx.globalAlpha = 1;
-
-    /* swish/miss flash */
-    if (swishFrames > 0) {
-      ctx.fillStyle   = '#1a1a1a';
-      ctx.globalAlpha = swishFrames / 20 * 0.7;
-      ctx.font        = 'bold 28px "Bebas Neue", sans-serif';
-      ctx.textAlign   = 'center';
-      ctx.fillText('SWISH!', CW/2, CH/2);
-      ctx.globalAlpha = 1;
-    }
-    if (missFrames > 0) {
-      ctx.fillStyle   = '#1a1a1a';
-      ctx.globalAlpha = missFrames / 20 * 0.4;
-      ctx.font        = 'bold 22px "Bebas Neue", sans-serif';
-      ctx.textAlign   = 'center';
-      ctx.fillText('BRICK', CW/2, CH/2);
-      ctx.globalAlpha = 1;
-    }
-
-    /* drag arrow */
-    if (dragStart && !hBall.flying) {
-      var dx = dragStart.curX - dragStart.startX;
-      var dy = dragStart.curY - dragStart.startY;
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-        ctx.strokeStyle  = '#1a1a1a';
-        ctx.globalAlpha  = 0.3;
-        ctx.lineWidth    = 2;
-        ctx.setLineDash([4,4]);
-        ctx.beginPath();
-        ctx.moveTo(hBall.x, hBall.y);
-        ctx.lineTo(hBall.x - dx * 1.5, hBall.y - dy * 1.5);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.globalAlpha = 1;
-      }
-    }
-
-    /* ball */
-    ctx.fillStyle = '#1a1a1a';
-    ctx.beginPath();
-    ctx.arc(hBall.x, hBall.y, hBall.r, 0, Math.PI*2);
-    ctx.fill();
-    /* ball seam lines */
-    ctx.strokeStyle = pongPageBg;
-    ctx.lineWidth   = 1.5;
-    ctx.globalAlpha = 0.4;
-    ctx.beginPath();
-    ctx.arc(hBall.x, hBall.y, hBall.r, 0, Math.PI*2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(hBall.x - hBall.r, hBall.y);
-    ctx.lineTo(hBall.x + hBall.r, hBall.y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(hBall.x, hBall.y, hBall.r * 0.5, 0.2, Math.PI - 0.2);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    /* idle hint */
-    if (hoopsState === 'idle' && !hBall.flying) {
-      ctx.fillStyle   = '#1a1a1a';
-      ctx.globalAlpha = 0.25;
-      ctx.font        = '12px "DM Mono", monospace';
-      ctx.textAlign   = 'center';
-      ctx.fillText('DRAG BALL & RELEASE TO SHOOT', CW/2, CH - 20);
-      ctx.globalAlpha = 1;
-    }
-    ctx.textAlign = 'left';
-  }
-
-  function hoopsLoop() {
-    if (!hBall.flying) { return; }
-
-    /* gravity */
-    hBall.vy += 0.35;
-    hBall.x  += hBall.vx;
-    hBall.y  += hBall.vy;
-
-    /* wall bounce */
-    if (hBall.x - hBall.r < 0)  { hBall.x = hBall.r;      hBall.vx *= -0.6; }
-    if (hBall.x + hBall.r > CW) { hBall.x = CW - hBall.r; hBall.vx *= -0.6; }
-
-    /* decay flash */
-    if (swishFrames > 0) { swishFrames--; }
-    if (missFrames > 0)  { missFrames--; }
-
-    /* score detection — ball passes through hoop center */
-    var hoopCX   = hoop.x;
-    var hoopCY   = hoop.y;
-    var leftRimX = hoop.x - hoop.w/2;
-    var rightRimX= hoop.x + hoop.w/2;
-
-    if (hBall.vy > 0 &&
-        hBall.y - hBall.r <= hoopCY + 15 &&
-        hBall.y - hBall.r >= hoopCY - 15 &&
-        hBall.x > leftRimX + hoop.rimR &&
-        hBall.x < rightRimX - hoop.rimR) {
-      makes++;
-      swishFrames = 30;
-      updateHoopsScore();
-      hBall.vy *= 0.5; /* swoosh through */
-    }
-
-    /* ball out of bounds — reset */
-    if (hBall.y - hBall.r > CH + 20 || hBall.y + hBall.r < -50) {
-      if (swishFrames === 0) { missFrames = 25; }
-      resetHoopsBall();
-    }
-
-    /* ball hits floor */
-    if (hBall.y + hBall.r > CH - 10) {
-      if (swishFrames === 0) { missFrames = 25; }
-      resetHoopsBall();
-    }
-
-    drawHoops();
-
-    if (hBall.flying) {
-      hoopsRaf = requestAnimationFrame(hoopsLoop);
-    }
-  }
-
-  function resetHoopsBall() {
-    hBall.x = CW/2; hBall.y = CH - 80;
-    hBall.vx = 0; hBall.vy = 0;
-    hBall.flying = false;
-    hoopsState   = 'idle';
-    drawHoops();
   }
 
   /* ── initial draw ── */
