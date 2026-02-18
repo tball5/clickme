@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Bebas+Neue&display=swap" rel="stylesheet"/>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <style>
     * {
       margin: 0;
@@ -811,8 +812,14 @@
   firebase.initializeApp(firebaseConfig);
 
   var db        = firebase.database();
+  var auth      = firebase.auth();
   var clickRef  = db.ref('clicks');
   var msgRef    = db.ref('messages');
+
+  /* ── ANONYMOUS AUTH ── */
+  auth.signInAnonymously().catch(function(err) {
+    console.warn('Auth error:', err);
+  });
 
   /* ── 50 SHADES ── */
   var shades = [];
@@ -1005,6 +1012,10 @@
   });
 
   function sendMessage() {
+    if (!auth.currentUser) {
+      auth.signInAnonymously().then(function() { sendMessage(); });
+      return;
+    }
     var name = nameInput.value.trim().substring(0, 20) || 'ANON';
     var text = msgInput.value.trim().substring(0, 200);
     if (!text) { return; }
