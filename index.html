@@ -9,11 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; }
 
     body {
       min-height: 100vh;
@@ -51,7 +47,6 @@
       max-width: 600px;
     }
 
-    /* ── TITLE ── */
     .title {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(3rem, 10vw, 8rem);
@@ -63,11 +58,7 @@
       user-select: none;
     }
 
-    /* ── PROGRESS ── */
-    .progress-wrap {
-      width: 100%;
-    }
-
+    .progress-wrap { width: 100%; }
     .progress-label {
       display: flex;
       justify-content: space-between;
@@ -79,7 +70,6 @@
       margin-bottom: 0.4rem;
       transition: color 0.4s ease;
     }
-
     .progress-bar {
       width: 100%;
       height: 6px;
@@ -87,7 +77,6 @@
       border-radius: 999px;
       overflow: hidden;
     }
-
     .progress-fill {
       height: 100%;
       background: #1a1a1a;
@@ -96,7 +85,6 @@
       width: 0%;
     }
 
-    /* ── COUNTER ── */
     .counter {
       font-family: 'Bebas Neue', sans-serif;
       font-size: clamp(1rem, 4vw, 2.5rem);
@@ -105,13 +93,8 @@
       opacity: 0.55;
       transition: color 0.4s ease;
     }
+    .counter span { opacity: 1; font-size: 1.2em; }
 
-    .counter span {
-      opacity: 1;
-      font-size: 1.2em;
-    }
-
-    /* ── CLICK BUTTON ── */
     .btn {
       background: #2e2e2e;
       color: #f0f0f0;
@@ -128,47 +111,26 @@
       box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
       clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
     }
-
-    .btn:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 8px 8px 0px rgba(0,0,0,0.35);
-    }
-
-    .btn:active {
-      transform: translate(3px, 3px);
-      box-shadow: 3px 3px 0px rgba(0,0,0,0.3);
-    }
-
-    .btn.pop {
-      animation: pop 0.15s ease;
-    }
-
+    .btn:hover { transform: translate(-2px,-2px); box-shadow: 8px 8px 0px rgba(0,0,0,0.35); }
+    .btn:active { transform: translate(3px,3px); box-shadow: 3px 3px 0px rgba(0,0,0,0.3); }
+    .btn.pop { animation: pop 0.15s ease; }
     @keyframes pop {
       0%   { transform: scale(1); }
-      40%  { transform: scale(0.93) translate(3px, 3px); }
+      40%  { transform: scale(0.93) translate(3px,3px); }
       100% { transform: scale(1); }
     }
 
-    /* ── SHADE LABEL ── */
     .shade-label {
       font-size: 0.65rem;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       color: #1a1a1a;
-      opacity: 0.4;
+      opacity: 0.5;
       transition: color 0.4s ease;
     }
+    .shade-label.connecting { animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:0.7} }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 0.2; }
-      50%       { opacity: 0.6; }
-    }
-
-    .connecting {
-      animation: pulse 1.2s ease-in-out infinite;
-    }
-
-    /* ── DIVIDER ── */
     .divider {
       width: 100%;
       height: 1px;
@@ -176,46 +138,37 @@
       transition: background 0.4s ease;
     }
 
-    /* ── CHAT BOX ── */
-    .chat-section {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
+    /* CHAT */
+    .chat-section { width: 100%; display: flex; flex-direction: column; gap: 0.75rem; }
     .chat-header {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 1.4rem;
       letter-spacing: 0.2em;
       color: #1a1a1a;
-      text-align: left;
       transition: color 0.4s ease;
     }
-
+    .chat-count {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      opacity: 0.4;
+      transition: color 0.4s ease;
+    }
     .chat-messages {
       width: 100%;
-      height: 280px;
+      max-height: 280px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      padding: 0.75rem;
+      gap: 0.35rem;
+      padding: 0.5rem;
       background: rgba(0,0,0,0.06);
       border: 1px solid rgba(0,0,0,0.12);
       transition: background 0.4s ease, border-color 0.4s ease;
-      cursor: default;
     }
-
-    .chat-messages::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .chat-messages::-webkit-scrollbar-thumb {
-      background: rgba(0,0,0,0.2);
-      border-radius: 999px;
-    }
-
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 999px; }
     .chat-empty {
       font-size: 0.7rem;
       letter-spacing: 0.1em;
@@ -225,7 +178,6 @@
       text-align: center;
       margin: auto;
     }
-
     .chat-msg {
       display: flex;
       justify-content: space-between;
@@ -237,590 +189,185 @@
       transition: background 0.3s ease;
       animation: fadeIn 0.25s ease;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .chat-msg:hover {
-      background: rgba(255,255,255,0.9);
-    }
-
-    .msg-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-    }
-
-    .msg-meta {
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #1a1a1a;
-      opacity: 0.65;
-    }
-
-    .msg-text {
-      font-size: 0.8rem;
-      line-height: 1.5;
-      color: #1a1a1a !important;
-      word-break: break-word;
-    }
-
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .chat-msg:hover { background: rgba(255,255,255,0.9); }
+    .msg-body { flex:1; display:flex; flex-direction:column; gap:0.15rem; }
+    .msg-meta { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:#1a1a1a; opacity:0.65; }
+    .msg-text { font-size:0.8rem; line-height:1.5; color:#1a1a1a !important; word-break:break-word; }
     .msg-delete {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #1a1a1a;
-      opacity: 0.2;
-      font-size: 0.75rem;
-      padding: 0.1rem 0.3rem;
-      transition: opacity 0.2s ease;
-      flex-shrink: 0;
-      line-height: 1;
+      background: none; border: none; cursor: pointer; color: #1a1a1a;
+      opacity: 0.2; font-size: 0.75rem; padding: 0.1rem 0.3rem;
+      transition: opacity 0.2s ease; flex-shrink: 0; line-height: 1;
     }
-
-    .msg-delete:hover {
-      opacity: 0.7;
-    }
-
-    /* ── CHAT INPUT ── */
-    .chat-input-wrap {
-      display: flex;
-      gap: 0.5rem;
-      width: 100%;
-    }
-
+    .msg-delete:hover { opacity: 0.6; }
+    .chat-input-wrap { display:flex; gap:0.5rem; flex-wrap:wrap; }
     .chat-name-input {
-      width: 130px;
-      flex-shrink: 0;
-      background: rgba(0,0,0,0.06);
-      border: 1px solid rgba(0,0,0,0.15);
-      color: #1a1a1a;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      padding: 0.65rem 0.75rem;
-      outline: none;
-      transition: border-color 0.2s ease, background 0.4s ease;
-      cursor: text;
+      width: 130px; flex-shrink: 0;
+      background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.12);
+      color: #1a1a1a; font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.08em; padding: 0.5rem 0.7rem; outline: none;
+      text-transform: uppercase; transition: background 0.4s, border-color 0.4s, color 0.4s;
     }
-
-    .chat-name-input::placeholder {
-      color: #1a1a1a;
-      opacity: 0.3;
-    }
-
-    .chat-name-input:focus {
-      border-color: rgba(0,0,0,0.4);
-      background: rgba(255,255,255,0.3);
-    }
-
     .chat-text-input {
-      flex: 1;
-      background: rgba(0,0,0,0.06);
-      border: 1px solid rgba(0,0,0,0.15);
-      color: #1a1a1a;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      padding: 0.65rem 0.75rem;
-      outline: none;
-      transition: border-color 0.2s ease, background 0.4s ease;
-      cursor: text;
+      flex: 1; min-width: 0;
+      background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.12);
+      color: #1a1a1a; font-family: 'DM Mono', monospace; font-size: 0.75rem;
+      padding: 0.5rem 0.7rem; outline: none;
+      transition: background 0.4s, border-color 0.4s, color 0.4s;
     }
-
-    .chat-text-input::placeholder {
-      color: #1a1a1a;
-      opacity: 0.3;
-    }
-
-    .chat-text-input:focus {
-      border-color: rgba(0,0,0,0.4);
-      background: rgba(255,255,255,0.3);
-    }
-
     .chat-send-btn {
-      background: #2e2e2e;
-      color: #f0f0f0;
-      border: none;
-      padding: 0.65rem 1.2rem;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1rem;
-      letter-spacing: 0.15em;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.1s ease;
-      flex-shrink: 0;
+      background: #2e2e2e; color: #f0f0f0; border: none;
+      font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem;
+      letter-spacing: 0.15em; padding: 0.5rem 1.2rem; cursor: pointer;
+      transition: background 0.4s, color 0.4s, opacity 0.2s;
+      touch-action: manipulation;
     }
+    .chat-send-btn:hover { opacity: 0.8; }
 
-    .chat-send-btn:hover {
-      opacity: 0.85;
-      transform: translate(-1px, -1px);
-    }
-
-    .chat-send-btn:active {
-      transform: translate(1px, 1px);
-    }
-
-    .chat-count {
-      font-size: 0.6rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #1a1a1a;
-      opacity: 0.35;
-      text-align: right;
-      transition: color 0.4s ease;
-    }
-
-    /* ── MUSIC PLAYER ── */
-    .player-section {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .player-header {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: 0.2em;
-      color: #1a1a1a;
-      text-align: left;
-      transition: color 0.4s ease;
-    }
-
-    .player-box {
-      width: 100%;
-      background: rgba(0,0,0,0.06);
-      border: 1px solid rgba(0,0,0,0.12);
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-      transition: background 0.4s ease, border-color 0.4s ease;
-    }
-
-    .player-now-playing {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .player-art {
-      width: 48px;
-      height: 48px;
-      background: rgba(0,0,0,0.15);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      transition: background 0.4s ease;
-      position: relative;
-      overflow: hidden;
-      filter: grayscale(1) contrast(100);
-    }
-
-    .player-art.playing::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.08);
-      animation: artPulse 1s ease-in-out infinite;
-    }
-
-    @keyframes artPulse {
-      0%, 100% { opacity: 0; }
-      50% { opacity: 1; }
-    }
-
-    .player-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .player-track-name {
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
-      color: #1a1a1a;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: color 0.4s ease;
-    }
-
-    .player-track-num {
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #1a1a1a;
-      opacity: 0.4;
-      margin-top: 0.15rem;
-      transition: color 0.4s ease;
-    }
-
-    /* Progress / scrubber */
-    .player-progress-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .player-time {
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      color: #1a1a1a;
-      opacity: 0.45;
-      flex-shrink: 0;
-      width: 34px;
-      transition: color 0.4s ease;
-    }
-
-    .player-time.right {
-      text-align: right;
-    }
-
-    .player-scrubber {
-      flex: 1;
-      -webkit-appearance: none;
-      appearance: none;
-      height: 4px;
-      background: rgba(0,0,0,0.15);
-      border-radius: 999px;
-      outline: none;
-      cursor: pointer;
-      transition: background 0.4s ease;
-    }
-
-    .player-scrubber::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #1a1a1a;
-      cursor: pointer;
-      transition: background 0.4s ease;
-    }
-
-    .player-scrubber::-moz-range-thumb {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #1a1a1a;
-      cursor: pointer;
-      border: none;
-      transition: background 0.4s ease;
-    }
-
-    /* Controls */
-    .player-controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-    }
-
-    .ctrl-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #1a1a1a;
-      opacity: 0.6;
-      font-size: 1rem;
-      padding: 0.3rem;
-      transition: opacity 0.15s ease, transform 0.1s ease;
-      line-height: 1;
-    }
-
-    .ctrl-btn:hover { opacity: 1; transform: scale(1.1); }
-    .ctrl-btn:active { transform: scale(0.95); }
-
-    .ctrl-btn.play-pause {
-      font-size: 1.6rem;
-      opacity: 0.85;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.1);
-      border-radius: 50%;
-    }
-
-    .ctrl-btn.play-pause:hover { opacity: 1; background: rgba(0,0,0,0.18); }
-
-    /* Volume */
-    .player-volume-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .vol-icon {
-      font-size: 0.8rem;
-      color: #1a1a1a;
-      opacity: 0.4;
-      flex-shrink: 0;
-      transition: color 0.4s ease;
-    }
-
-    .player-volume {
-      flex: 1;
-      -webkit-appearance: none;
-      appearance: none;
-      height: 3px;
-      background: rgba(0,0,0,0.15);
-      border-radius: 999px;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .player-volume::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #1a1a1a;
-      cursor: pointer;
-      transition: background 0.4s ease;
-    }
-
-    .player-volume::-moz-range-thumb {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #1a1a1a;
-      cursor: pointer;
-      border: none;
-    }
-
-    /* Track list */
-    .track-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .track-item {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.45rem 0.5rem;
-      cursor: pointer;
-      transition: background 0.15s ease;
-      border-radius: 2px;
-    }
-
-    .track-item:hover {
-      background: rgba(0,0,0,0.06);
-    }
-
-    .track-item.active {
-      background: rgba(0,0,0,0.1);
-    }
-
-    .track-num {
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      color: #1a1a1a;
-      opacity: 0.35;
-      width: 16px;
-      text-align: center;
-      flex-shrink: 0;
-      transition: color 0.4s ease;
-    }
-
-    .track-item.active .track-num {
-      opacity: 0;
-    }
-
-    .track-playing-indicator {
-      display: none;
-      width: 16px;
-      flex-shrink: 0;
-      justify-content: center;
-      gap: 2px;
-    }
-
-    .track-item.active .track-playing-indicator {
-      display: flex;
-    }
-
-    .track-item.active .track-num-wrap .track-num {
-      display: none;
-    }
-
-    .bar {
-      width: 3px;
-      background: #1a1a1a;
-      border-radius: 999px;
-      animation: barBounce 0.8s ease-in-out infinite;
-      opacity: 0.6;
-    }
-
-    .bar:nth-child(1) { height: 8px; animation-delay: 0s; }
-    .bar:nth-child(2) { height: 12px; animation-delay: 0.15s; }
-    .bar:nth-child(3) { height: 6px; animation-delay: 0.3s; }
-
-    .track-item.paused .bar {
-      animation-play-state: paused;
-    }
-
-    @keyframes barBounce {
-      0%, 100% { transform: scaleY(0.4); }
-      50%       { transform: scaleY(1); }
-    }
-
-    .track-name-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.04em;
-      color: #1a1a1a;
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: color 0.4s ease;
-    }
-
-    /* ── PONG ── */
-    .pong-section {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .pong-header {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: 0.2em;
-      color: #1a1a1a;
-      text-align: left;
-      transition: color 0.4s ease;
-    }
-
-    .game-toggle {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: 0.2em;
-    }
-
+    /* GAMES */
+    .pong-section { width:100%; display:flex; flex-direction:column; gap:0.75rem; }
+    .game-toggle { display:flex; align-items:center; gap:0.5rem; }
     .game-toggle-sep {
-      color: #1a1a1a;
-      opacity: 0.3;
-      transition: color 0.4s ease;
-    }
-
-    .game-toggle-btn {
-      background: none;
-      border: none;
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: 0.2em;
-      cursor: pointer;
-      padding: 0;
+      font-size: 1.4rem; letter-spacing: 0.2em;
+      color: #1a1a1a; opacity: 0.3; transition: color 0.4s ease;
+    }
+    .game-toggle-btn {
+      background: none; border: none;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem; letter-spacing: 0.2em;
+      cursor: pointer; padding: 0;
       transition: color 0.4s ease, opacity 0.2s ease;
     }
-
-    .game-toggle-btn.active {
-      color: #1a1a1a;
-      opacity: 1;
-    }
-
-    .game-toggle-btn.inactive {
-      color: #1a1a1a;
-      opacity: 0.3;
-    }
-
-    .game-toggle-btn:hover { opacity: 0.7 !important; }
-
-    .pong-wrap {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
+    .game-toggle-btn.active  { color:#1a1a1a; opacity:1; }
+    .game-toggle-btn.inactive{ color:#1a1a1a; opacity:0.3; }
+    .game-toggle-btn:hover   { opacity:0.7 !important; }
+    .pong-wrap { width:100%; display:flex; flex-direction:column; align-items:center; gap:0.5rem; }
     #gameCanvas {
-      width: 100%;
-      max-width: 600px;
-      height: auto;
-      display: block;
+      width:100%; max-width:600px; height:auto; display:block;
       border: 1px solid rgba(0,0,0,0.15);
-      cursor: crosshair;
-      touch-action: none;
+      cursor: crosshair; touch-action: none;
     }
-
     .pong-info {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #1a1a1a;
-      opacity: 0.45;
-      transition: color 0.4s ease;
+      display:flex; justify-content:space-between; width:100%;
+      font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase;
+      color:#1a1a1a; opacity:0.45; transition:color 0.4s ease;
     }
-
     .pong-start-msg {
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: #1a1a1a;
-      opacity: 0.4;
-      text-align: center;
-      transition: color 0.4s ease;
+      font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase;
+      color:#1a1a1a; opacity:0.4; text-align:center; transition:color 0.4s ease;
     }
-
     .pong-pause-btn {
-      background: none;
-      border: 1px solid rgba(0,0,0,0.25);
-      color: #1a1a1a;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 0.85rem;
-      letter-spacing: 0.15em;
-      padding: 0.2rem 0.7rem;
-      cursor: pointer;
-      opacity: 0.5;
-      transition: opacity 0.2s ease;
+      background:none; border:1px solid rgba(0,0,0,0.25); color:#1a1a1a;
+      font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:0.15em;
+      padding:0.2rem 0.7rem; cursor:pointer; opacity:0.5; transition:opacity 0.2s ease;
+    }
+    .pong-pause-btn:hover { opacity:1; }
+
+    /* PLAYER */
+    .player-section { width:100%; display:flex; flex-direction:column; gap:0.75rem; }
+    .player-header {
+      font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:0.2em;
+      color:#1a1a1a; transition:color 0.4s ease;
+    }
+    .player-box {
+      background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.12);
+      padding: 1rem; display:flex; flex-direction:column; gap:0.8rem;
+      transition: background 0.4s, border-color 0.4s;
+    }
+    .player-now-playing { display:flex; gap:0.8rem; align-items:center; }
+    .player-art {
+      width:48px; height:48px; background:rgba(0,0,0,0.15); display:flex;
+      align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;
+      transition:background 0.4s;
+    }
+    .player-info { display:flex; flex-direction:column; gap:0.2rem; }
+    .player-track-name {
+      font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.12em;
+      color:#1a1a1a; transition:color 0.4s;
+    }
+    .player-track-num {
+      font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase;
+      color:#1a1a1a; opacity:0.45; transition:color 0.4s;
+    }
+    .player-progress-wrap { display:flex; align-items:center; gap:0.5rem; }
+    .player-time {
+      font-size:0.6rem; letter-spacing:0.08em; color:#1a1a1a; opacity:0.5;
+      flex-shrink:0; min-width:28px; transition:color 0.4s;
+    }
+    .player-time.right { text-align:right; }
+    .player-scrubber {
+      flex:1; -webkit-appearance:none; appearance:none; height:3px;
+      background:rgba(0,0,0,0.15); border-radius:999px; outline:none; cursor:pointer;
+    }
+    .player-scrubber::-webkit-slider-thumb {
+      -webkit-appearance:none; width:10px; height:10px; border-radius:50%;
+      background:#1a1a1a; cursor:pointer; transition:background 0.4s;
+    }
+    .player-controls { display:flex; justify-content:center; align-items:center; gap:1.2rem; }
+    .ctrl-btn {
+      background:none; border:none; cursor:pointer; color:#1a1a1a;
+      font-size:1rem; opacity:0.5; transition:opacity 0.2s, transform 0.1s, color 0.4s;
+      padding:0.2rem;
+    }
+    .ctrl-btn:hover { opacity:1; transform:scale(1.1); }
+    .ctrl-btn:active { transform:scale(0.95); }
+    .ctrl-btn.play-pause {
+      font-size:1.6rem; opacity:0.85; width:44px; height:44px;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.1); border-radius:50%;
+    }
+    .ctrl-btn.play-pause:hover { opacity:1; background:rgba(0,0,0,0.18); }
+    .player-volume-wrap { display:flex; align-items:center; gap:0.5rem; }
+    .vol-icon { font-size:0.8rem; color:#1a1a1a; opacity:0.4; flex-shrink:0; transition:color 0.4s; }
+    .player-volume {
+      flex:1; -webkit-appearance:none; appearance:none; height:3px;
+      background:rgba(0,0,0,0.15); border-radius:999px; outline:none; cursor:pointer;
+    }
+    .player-volume::-webkit-slider-thumb {
+      -webkit-appearance:none; width:10px; height:10px; border-radius:50%;
+      background:#1a1a1a; cursor:pointer;
+    }
+    .track-list { display:flex; flex-direction:column; gap:0.3rem; }
+    .track-item {
+      display:flex; align-items:center; gap:0.6rem; padding:0.4rem 0.3rem;
+      cursor:pointer; opacity:0.6; transition:opacity 0.2s;
+    }
+    .track-item:hover { opacity:1; }
+    .track-item.active { opacity:1; }
+    .track-num {
+      font-size:0.6rem; letter-spacing:0.1em; color:#1a1a1a;
+      min-width:16px; text-align:right; flex-shrink:0; transition:color 0.4s;
+    }
+    .eq-bars { display:flex; align-items:flex-end; gap:1.5px; height:14px; flex-shrink:0; }
+    .bar {
+      width:2.5px; background:#1a1a1a; border-radius:1px;
+      animation:barBounce 0.6s ease-in-out infinite alternate; opacity:0.6;
+    }
+    .bar:nth-child(1){height:8px;animation-delay:0s}
+    .bar:nth-child(2){height:12px;animation-delay:0.15s}
+    .bar:nth-child(3){height:6px;animation-delay:0.3s}
+    .track-item.paused .bar { animation-play-state:paused; }
+    @keyframes barBounce { 0%,100%{transform:scaleY(0.4)} 50%{transform:scaleY(1)} }
+    .track-name-label {
+      font-size:0.75rem; letter-spacing:0.04em; color:#1a1a1a; flex:1;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color 0.4s;
     }
 
-    .pong-pause-btn:hover { opacity: 1; }
-
-    /* ── RIPPLE ── */
     .ripple {
-      position: fixed;
-      border-radius: 50%;
-      width: 10px;
-      height: 10px;
-      background: rgba(0,0,0,0.08);
-      transform: translate(-50%, -50%) scale(0);
-      animation: rippleOut 0.6s ease-out forwards;
-      pointer-events: none;
-      z-index: 0;
+      position:fixed; border-radius:50%; width:10px; height:10px;
+      background:rgba(0,0,0,0.08); transform:translate(-50%,-50%) scale(0);
+      animation:rippleOut 0.6s ease-out forwards; pointer-events:none; z-index:0;
     }
-
-    @keyframes rippleOut {
-      to {
-        transform: translate(-50%, -50%) scale(40);
-        opacity: 0;
-      }
-    }
+    @keyframes rippleOut { to{transform:translate(-50%,-50%) scale(40);opacity:0} }
   </style>
 </head>
 <body>
 
 <div class="container">
 
-  <!-- TITLE -->
   <div class="title" id="title">THE<br>GARAGE</div>
 
-  <!-- PROGRESS BAR -->
   <div class="progress-wrap">
     <div class="progress-label" id="progressLabel">
       <span></span>
@@ -831,31 +378,25 @@
     </div>
   </div>
 
-  <!-- COUNTER -->
   <div class="counter" id="counter">
     <span id="count">0</span> / 1,000,000
   </div>
 
-  <!-- CLICK BUTTON -->
   <button class="btn" id="clickBtn" disabled>CLICK ME, HOMIE!</button>
 
-  <!-- SHADE LABEL -->
   <div class="shade-label connecting" id="shadeLabel">CONNECTING...</div>
 
-  <!-- DIVIDER -->
   <div class="divider" id="divider"></div>
 
-  <!-- CHAT SECTION -->
+  <!-- CHAT -->
   <div class="chat-section">
-    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;">
       <div class="chat-header" id="chatHeader">CHAT</div>
       <div class="chat-count" id="chatCount"></div>
     </div>
-
     <div class="chat-messages" id="chatMessages">
       <div class="chat-empty" id="chatEmpty">NO MESSAGES YET. BE THE FIRST.</div>
     </div>
-
     <div class="chat-input-wrap">
       <input class="chat-name-input" id="nameInput" type="text" placeholder="YOUR NAME" maxlength="20" autocomplete="off"/>
       <input class="chat-text-input" id="msgInput"  type="text" placeholder="SAY SOMETHING..." maxlength="200" autocomplete="off"/>
@@ -863,12 +404,11 @@
     </div>
   </div>
 
-  <!-- DIVIDER 2 -->
   <div class="divider" id="divider2"></div>
 
-  <!-- PONG / HOOPS -->
+  <!-- GAMES -->
   <div class="pong-section">
-    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;">
       <div class="game-toggle">
         <button class="game-toggle-btn active" id="btnPong">PONG</button>
         <span class="game-toggle-sep">/</span>
@@ -880,124 +420,100 @@
       <canvas id="gameCanvas" width="400" height="500"></canvas>
       <div class="pong-info">
         <span id="gameLeft">YOU: 0</span>
-        <span class="pong-start-msg" id="pongMsg">CLICK TO START · MOUSE OR ↑↓ KEYS</span>
+        <span class="pong-start-msg" id="pongMsg">CLICK TO START</span>
         <span id="gameRight">CPU: 0</span>
       </div>
     </div>
   </div>
 
-  <!-- DIVIDER 3 -->
   <div class="divider" id="divider3"></div>
 
   <!-- MUSIC PLAYER -->
   <div class="player-section">
     <div class="player-header" id="playerHeader">TRACKS</div>
-
     <div class="player-box" id="playerBox">
-
-      <!-- Now playing -->
       <div class="player-now-playing">
-        <div class="player-art" id="playerArt">🎵</div>
+        <div class="player-art" id="playerArt">&#127925;</div>
         <div class="player-info">
           <div class="player-track-name" id="playerTrackName">SELECT A TRACK</div>
-          <div class="player-track-num" id="playerTrackNum">— / 7</div>
+          <div class="player-track-num"  id="playerTrackNum">&#8212; / 7</div>
         </div>
       </div>
-
-      <!-- Scrubber -->
       <div class="player-progress-wrap">
         <div class="player-time" id="timeElapsed">0:00</div>
         <input class="player-scrubber" id="scrubber" type="range" min="0" max="100" value="0"/>
         <div class="player-time right" id="timeDuration">0:00</div>
       </div>
-
-      <!-- Controls -->
       <div class="player-controls">
         <button class="ctrl-btn" id="prevBtn" title="Previous">&#9664;&#9664;</button>
         <button class="ctrl-btn play-pause" id="playPauseBtn" title="Play">&#9654;</button>
         <button class="ctrl-btn" id="nextBtn" title="Next">&#9654;&#9654;</button>
       </div>
-
-      <!-- Volume -->
       <div class="player-volume-wrap">
         <span class="vol-icon">&#9651;</span>
         <input class="player-volume" id="volumeSlider" type="range" min="0" max="1" step="0.01" value="0.8"/>
       </div>
-
-      <!-- Track list -->
       <div class="track-list" id="trackList"></div>
-
     </div>
   </div>
 
 </div>
 
 <script>
+  /* ── FIREBASE ── */
   var firebaseConfig = {
     apiKey: "AIzaSyCHIDtqYhDi5EyCwbtTvAZGS0Nd4-3dkhE",
     authDomain: "click-me-8c931.firebaseapp.com",
     databaseURL: "https://click-me-8c931-default-rtdb.firebaseio.com",
     projectId: "click-me-8c931",
-    storageBucket: "click-me-8c931.firebasestorage.app",
-    messagingSenderId: "805463676341",
-    appId: "1:805463676341:web:42e3a25681b755c2c175fc",
-    measurementId: "G-CHL8XMX41B"
+    storageBucket: "click-me-8c931.appspot.com",
+    messagingSenderId: "206668014",
+    appId: "1:206668014:web:abc123"
   };
-
   firebase.initializeApp(firebaseConfig);
-
   var db        = firebase.database();
   var auth      = firebase.auth();
   var clickRef  = db.ref('clicks');
-  var msgRef    = db.ref('messages');
+  var msgsRef   = db.ref('messages');
+  var MAX_MSGS  = 300;
+  var GOAL      = 1000000;
 
-  /* ── ANONYMOUS AUTH ── */
-  auth.signInAnonymously().catch(function(err) {
-    console.warn('Auth error:', err);
-  });
-
-  /* ── 50 SHADES ── */
+  /* ── SHADES ── */
   var shades = [];
-  for (var i = 0; i < 50; i++) {
-    var v = Math.round(240 - (i * (200 / 49)));
-    shades.push(v);
-  }
+  (function(){
+    var step = (240-40)/49;
+    for(var i=0;i<50;i++) shades.push(Math.round(240 - i*step));
+  })();
 
-  var GOAL = 1000000;
+  /* ── DOM refs ── */
+  var titleEl     = document.getElementById('title');
+  var counterEl   = document.getElementById('counter');
+  var countEl     = document.getElementById('count');
+  var fillEl      = document.getElementById('fill');
+  var pctEl       = document.getElementById('pct');
+  var shadeEl     = document.getElementById('shadeLabel');
+  var dividerEl   = document.getElementById('divider');
+  var progressLbl = document.getElementById('progressLabel');
+  var btn         = document.getElementById('clickBtn');
+  var chatHeader  = document.getElementById('chatHeader');
+  var chatCount   = document.getElementById('chatCount');
+  var chatMessages= document.getElementById('chatMessages');
+  var nameInput   = document.getElementById('nameInput');
+  var msgInput    = document.getElementById('msgInput');
+  var sendBtn     = document.getElementById('sendBtn');
   var currentAccent = '#1a1a1a';
   var pongPageBg    = '#c8c8c8';
 
-  /* ── DOM REFS ── */
-  var btn          = document.getElementById('clickBtn');
-  var countEl      = document.getElementById('count');
-  var fillEl       = document.getElementById('fill');
-  var pctEl        = document.getElementById('pct');
-  var shadeEl      = document.getElementById('shadeLabel');
-  var titleEl      = document.getElementById('title');
-  var counterEl    = document.getElementById('counter');
-  var progressLbl  = document.getElementById('progressLabel');
-  var dividerEl    = document.getElementById('divider');
-  var chatHeader   = document.getElementById('chatHeader');
-  var chatCount    = document.getElementById('chatCount');
-  var chatMessages = document.getElementById('chatMessages');
-  var chatEmpty    = document.getElementById('chatEmpty');
-  var nameInput    = document.getElementById('nameInput');
-  var msgInput     = document.getElementById('msgInput');
-  var sendBtn      = document.getElementById('sendBtn');
-
-  /* ── UPDATE CLICK UI ── */
+  /* ── UPDATE UI ── */
   function updateUI(count) {
     countEl.textContent = count.toLocaleString();
-
-    var pct = Math.min((count / GOAL) * 100, 100);
-    fillEl.style.width = pct.toFixed(2) + '%';
-    pctEl.textContent  = pct.toFixed(2) + '%';
-
+    var pct = Math.min((count/GOAL)*100, 100);
+    fillEl.style.width = pct.toFixed(2)+'%';
+    pctEl.textContent  = pct.toFixed(2)+'%';
     var idx        = count % 50;
     var brightness = shades[idx];
-    var bg         = 'rgb(' + brightness + ',' + brightness + ',' + brightness + ')';
+    var bg         = 'rgb('+brightness+','+brightness+','+brightness+')';
     document.body.style.backgroundColor = bg;
-
     var accent = brightness < 128 ? '#f0f0f0' : '#1a1a1a';
     var btnBg  = brightness < 128 ? '#e0e0e0' : '#2e2e2e';
     var btnTxt = brightness < 128 ? '#1a1a1a' : '#f0f0f0';
@@ -1005,8 +521,8 @@
     var inputBdr = brightness < 128 ? 'rgba(255,255,255,0.2)'  : 'rgba(0,0,0,0.15)';
     var divBg    = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
     currentAccent = accent;
+    pongPageBg    = bg;
 
-    /* click section */
     titleEl.style.color        = accent;
     counterEl.style.color      = accent;
     shadeEl.style.color        = accent;
@@ -1015,81 +531,63 @@
     btn.style.color            = btnTxt;
     dividerEl.style.background = divBg;
     var labelSpans = progressLbl.querySelectorAll('span');
-    for (var s = 0; s < labelSpans.length; s++) { labelSpans[s].style.color = accent; }
+    for(var s=0;s<labelSpans.length;s++) labelSpans[s].style.color = accent;
     shadeEl.classList.remove('connecting');
-    shadeEl.textContent = 'SHADE ' + String(idx + 1).padStart(2, '0') + ' OF 50';
+    shadeEl.textContent = 'SHADE '+String(idx+1).padStart(2,'0')+' OF 50';
 
-    /* chat section */
-    chatHeader.style.color           = accent;
-    chatCount.style.color            = accent;
-    nameInput.style.background       = inputBg;
-    nameInput.style.borderColor      = inputBdr;
-    nameInput.style.color            = accent;
-    msgInput.style.background        = inputBg;
-    msgInput.style.borderColor       = inputBdr;
-    msgInput.style.color             = accent;
-    chatMessages.style.background    = brightness < 128 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
-    chatMessages.style.borderColor   = inputBdr;
-    sendBtn.style.background         = btnBg;
-    sendBtn.style.color              = btnTxt;
+    chatHeader.style.color          = accent;
+    chatCount.style.color           = accent;
+    nameInput.style.background      = inputBg;
+    nameInput.style.borderColor     = inputBdr;
+    nameInput.style.color           = accent;
+    msgInput.style.background       = inputBg;
+    msgInput.style.borderColor      = inputBdr;
+    msgInput.style.color            = accent;
+    chatMessages.style.background   = brightness < 128 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+    chatMessages.style.borderColor  = inputBdr;
+    sendBtn.style.background        = btnBg;
+    sendBtn.style.color             = btnTxt;
 
-    /* dividers */
-    var d2 = document.getElementById('divider2');
-    var d3 = document.getElementById('divider3');
-    if (d2) { d2.style.background = divBg; }
-    if (d3) { d3.style.background = divBg; }
+    var d2=document.getElementById('divider2'); if(d2) d2.style.background=divBg;
+    var d3=document.getElementById('divider3'); if(d3) d3.style.background=divBg;
 
-    /* pong section */
-    var ph = document.getElementById('pongHeader');
-    var pl = document.getElementById('gameLeft');
-    var pr = document.getElementById('gameRight');
-    var bp = document.getElementById('btnPong');
-    var bh = document.getElementById('btnHoops');
-    if (bp) { bp.style.color = accent; }
-    if (bh) { bh.style.color = accent; }
-    var sep = document.querySelector('.game-toggle-sep');
-    if (sep) { sep.style.color = accent; }
-    var pm = document.getElementById('pongMsg');
-    var pb = document.getElementById('pongPauseBtn');
-    if (ph) { ph.style.color = accent; }
-    if (pl) { pl.style.color = accent; }
-    if (pr) { pr.style.color = accent; }
-    if (pm) { pm.style.color = accent; }
-    if (pb) { pb.style.color = accent; pb.style.borderColor = inputBdr; }
-    /* update pong canvas bg color — paddles/ball stay black */
-    pongPageBg = bg;
+    var bp=document.getElementById('btnPong'),bh=document.getElementById('btnHoops');
+    var sep=document.querySelector('.game-toggle-sep');
+    var pm=document.getElementById('pongMsg'),pb=document.getElementById('pongPauseBtn');
+    var gl=document.getElementById('gameLeft'),gr=document.getElementById('gameRight');
+    if(bp)  bp.style.color=accent;
+    if(bh)  bh.style.color=accent;
+    if(sep) sep.style.color=accent;
+    if(pm)  pm.style.color=accent;
+    if(pb)  { pb.style.color=accent; pb.style.borderColor=inputBdr; }
+    if(gl)  gl.style.color=accent;
+    if(gr)  gr.style.color=accent;
 
-    /* music player section */
-    var playerHeader  = document.getElementById('playerHeader');
-    var playerBox     = document.getElementById('playerBox');
-    var playerArt     = document.getElementById('playerArt');
-    var playerTName   = document.getElementById('playerTrackName');
-    var playerTNum    = document.getElementById('playerTrackNum');
-    var timeEl        = document.getElementById('timeElapsed');
-    var timeDur       = document.getElementById('timeDuration');
-    var scrub         = document.getElementById('scrubber');
-    var volSlider     = document.getElementById('volumeSlider');
-    if (playerHeader) { playerHeader.style.color = accent; }
-    if (playerBox)    { playerBox.style.background = inputBg; playerBox.style.borderColor = inputBdr; }
-    if (playerArt)    { playerArt.style.background = brightness < 128 ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.15)'; }
-    if (playerTName)  { playerTName.style.color = accent; }
-    if (playerTNum)   { playerTNum.style.color = accent; }
-    if (timeEl)       { timeEl.style.color = accent; }
-    if (timeDur)      { timeDur.style.color = accent; }
-    if (scrub)        { scrub.style.background = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'; }
-    if (volSlider)    { volSlider.style.background = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'; }
-    var ctrlBtns = document.querySelectorAll('.ctrl-btn');
-    for (var c = 0; c < ctrlBtns.length; c++) { ctrlBtns[c].style.color = accent; }
-    var trackLabels = document.querySelectorAll('.track-name-label, .track-num, .vol-icon');
-    for (var t = 0; t < trackLabels.length; t++) { trackLabels[t].style.color = accent; }
-    var bars = document.querySelectorAll('.bar');
-    for (var b = 0; b < bars.length; b++) { bars[b].style.background = accent; }
+    var ph=document.getElementById('playerHeader'),pbox=document.getElementById('playerBox');
+    var pa=document.getElementById('playerArt'),ptn=document.getElementById('playerTrackName');
+    var ptnum=document.getElementById('playerTrackNum'),te=document.getElementById('timeElapsed');
+    var td=document.getElementById('timeDuration'),sc=document.getElementById('scrubber');
+    var vs=document.getElementById('volumeSlider');
+    if(ph)    ph.style.color=accent;
+    if(pbox)  { pbox.style.background=inputBg; pbox.style.borderColor=inputBdr; }
+    if(pa)    pa.style.background=brightness<128?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.15)';
+    if(ptn)   ptn.style.color=accent;
+    if(ptnum) ptnum.style.color=accent;
+    if(te)    te.style.color=accent;
+    if(td)    td.style.color=accent;
+    if(sc)    sc.style.background=brightness<128?'rgba(255,255,255,0.15)':'rgba(0,0,0,0.15)';
+    if(vs)    vs.style.background=brightness<128?'rgba(255,255,255,0.15)':'rgba(0,0,0,0.15)';
+    var cbs=document.querySelectorAll('.ctrl-btn');
+    for(var c=0;c<cbs.length;c++) cbs[c].style.color=accent;
+    var tls=document.querySelectorAll('.track-name-label,.track-num,.vol-icon');
+    for(var t=0;t<tls.length;t++) tls[t].style.color=accent;
+    var bars=document.querySelectorAll('.bar');
+    for(var b=0;b<bars.length;b++) bars[b].style.background=accent;
   }
 
   /* ── CLICK LISTENER ── */
   clickRef.on('value', function(snap) {
-    var val = snap.val();
-    if (val === null) { val = 0; }
+    var val = snap.val(); if(val===null) val=0;
     updateUI(val);
     btn.disabled = false;
   });
@@ -1097,326 +595,163 @@
   btn.addEventListener('click', function(e) {
     var ripple = document.createElement('div');
     ripple.className = 'ripple';
-    ripple.style.left = e.clientX + 'px';
-    ripple.style.top  = e.clientY + 'px';
+    ripple.style.left = e.clientX+'px';
+    ripple.style.top  = e.clientY+'px';
     document.body.appendChild(ripple);
-    setTimeout(function() {
-      if (ripple.parentNode) { ripple.parentNode.removeChild(ripple); }
-    }, 700);
-
+    setTimeout(function(){ if(ripple.parentNode) ripple.parentNode.removeChild(ripple); }, 700);
     btn.classList.remove('pop');
     void btn.offsetWidth;
     btn.classList.add('pop');
-
-    clickRef.transaction(function(current) {
-      return (current || 0) + 1;
-    });
+    clickRef.transaction(function(current) { return (current||0)+1; });
   });
 
-  /* ── CHAT ── */
-  var MAX_MESSAGES = 300;
+  /* ── AUTH ── */
+  auth.signInAnonymously().catch(function(err){ console.warn('Auth failed:', err); });
 
-  function timeAgo(ts) {
-    var diff = Math.floor((Date.now() - ts) / 1000);
-    if (diff < 60)  { return diff + 's ago'; }
-    if (diff < 3600){ return Math.floor(diff / 60) + 'm ago'; }
-    if (diff < 86400){ return Math.floor(diff / 3600) + 'h ago'; }
-    return Math.floor(diff / 86400) + 'd ago';
+  /* ── CHAT ── */
+  function formatTime(ts) {
+    var d = Date.now()-ts, s=Math.floor(d/1000), m=Math.floor(s/60), h=Math.floor(m/60);
+    if(s<60) return s+'s ago';
+    if(m<60) return m+'m ago';
+    if(h<24) return h+'h ago';
+    return Math.floor(h/24)+'d ago';
   }
 
-  function renderMessages(msgs) {
-    while (chatMessages.firstChild) {
-      chatMessages.removeChild(chatMessages.firstChild);
-    }
-
-    if (!msgs || msgs.length === 0) {
-      var empty = document.createElement('div');
-      empty.className = 'chat-empty';
-      empty.id = 'chatEmpty';
-      empty.textContent = 'NO MESSAGES YET. BE THE FIRST.';
-      chatMessages.appendChild(empty);
-      chatCount.textContent = '';
-      return;
-    }
-
-    chatCount.textContent = msgs.length + ' / ' + MAX_MESSAGES + ' MESSAGES';
-
-    for (var i = 0; i < msgs.length; i++) {
-      (function(msg) {
-        var wrap = document.createElement('div');
-        wrap.className = 'chat-msg';
-
-        var body = document.createElement('div');
-        body.className = 'msg-body';
-
-        var meta = document.createElement('div');
-        meta.className = 'msg-meta';
-        meta.textContent = (msg.name || 'ANON') + '  ·  ' + timeAgo(msg.ts);
-
-        var text = document.createElement('div');
-        text.className = 'msg-text';
-        text.textContent = msg.text;
-
-        var del = document.createElement('button');
-        del.className = 'msg-delete';
-        del.textContent = '✕';
-        del.title = 'Delete message';
-        del.addEventListener('click', function() {
-          msgRef.child(msg.key).remove();
-        });
-
-        body.appendChild(meta);
-        body.appendChild(text);
-        wrap.appendChild(body);
-        wrap.appendChild(del);
-        chatMessages.appendChild(wrap);
-      })(msgs[i]);
-    }
-
+  function renderMsg(id, data) {
+    var chatEmpty = document.getElementById('chatEmpty');
+    if(chatEmpty) chatEmpty.remove();
+    var el = document.createElement('div');
+    el.className = 'chat-msg'; el.id = 'msg-'+id;
+    var body = document.createElement('div'); body.className='msg-body';
+    var meta = document.createElement('div'); meta.className='msg-meta';
+    meta.textContent = (data.name||'ANON')+' · '+formatTime(data.ts);
+    var text = document.createElement('div'); text.className='msg-text';
+    text.textContent = data.text;
+    body.appendChild(meta); body.appendChild(text);
+    var del = document.createElement('button'); del.className='msg-delete'; del.textContent='x';
+    del.addEventListener('click', function(){ msgsRef.child(id).remove(); });
+    el.appendChild(body); el.appendChild(del);
+    chatMessages.appendChild(el);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  msgRef.on('value', function(snap) {
-    var data = snap.val();
-    if (!data) {
-      renderMessages([]);
-      return;
+  msgsRef.on('child_added', function(snap){ renderMsg(snap.key, snap.val()); });
+  msgsRef.on('child_removed', function(snap){
+    var el=document.getElementById('msg-'+snap.key);
+    if(el) el.remove();
+    if(chatMessages.children.length===0){
+      var e=document.createElement('div');e.className='chat-empty';e.id='chatEmpty';
+      e.textContent='NO MESSAGES YET. BE THE FIRST.';chatMessages.appendChild(e);
     }
-
-    var msgs = [];
-    var keys = Object.keys(data);
-    for (var k = 0; k < keys.length; k++) {
-      var item = data[keys[k]];
-      item.key = keys[k];
-      msgs.push(item);
-    }
-
-    msgs.sort(function(a, b) { return a.ts - b.ts; });
-
-    renderMessages(msgs);
+  });
+  msgsRef.on('value', function(snap){
+    var c=snap.numChildren();
+    chatCount.textContent=c>0?c+'/'+MAX_MSGS+' MESSAGES':'';
   });
 
   function sendMessage() {
-    if (!auth.currentUser) {
-      auth.signInAnonymously().then(function() { sendMessage(); });
-      return;
-    }
-    var name = nameInput.value.trim().substring(0, 20) || 'ANON';
-    var text = msgInput.value.trim().substring(0, 200);
-    if (!text) { return; }
-
-    msgRef.once('value', function(snap) {
-      var data = snap.val();
-      var count = data ? Object.keys(data).length : 0;
-
-      if (count >= MAX_MESSAGES) {
-        var keys = Object.keys(data);
-        var msgs = [];
-        for (var k = 0; k < keys.length; k++) {
-          msgs.push({ key: keys[k], ts: data[keys[k]].ts });
-        }
-        msgs.sort(function(a, b) { return a.ts - b.ts; });
-        msgRef.child(msgs[0].key).remove();
+    var text = msgInput.value.trim(); if(!text) return;
+    if(!auth.currentUser) { alert('Still connecting, try again!'); return; }
+    var name = (nameInput.value.trim()||'ANON').toUpperCase();
+    msgsRef.once('value', function(snap){
+      if(snap.numChildren()>=MAX_MSGS){
+        var keys=[];snap.forEach(function(c){keys.push(c.key);});
+        msgsRef.child(keys[0]).remove();
       }
-
-      msgRef.push({
-        name: name,
-        text: text,
-        ts: Date.now()
-      });
-
-      msgInput.value = '';
-      msgInput.focus();
+      msgsRef.push({name:name,text:text,ts:Date.now()});
     });
+    msgInput.value='';
   }
-
   sendBtn.addEventListener('click', sendMessage);
+  msgInput.addEventListener('keydown', function(e){ if(e.key==='Enter') sendMessage(); });
 
   /* ── MUSIC PLAYER ── */
   var tracks = [
-    { name: 'Lil Couch',        file: 'Lil_Couch.mp3' },
-    { name: 'Juice',            file: 'Juice.mp3' },
-    { name: 'Rainbow Warhead',  file: 'rainbow_warhead.mp3' },
-    { name: 'Moonlight Asada',  file: 'moonlight_asada.mp3' },
-    { name: 'White Lightning',  file: 'White_Lightning.mp3' },
-    { name: 'Super',            file: 'Super.mp3' },
-    { name: 'Flat Earth',       file: 'flat_earth.mp3' }
+    { name:'Lil Couch',       file:'Lil_Couch.mp3' },
+    { name:'Juice',           file:'Juice.mp3' },
+    { name:'Rainbow Warhead', file:'rainbow_warhead.mp3' },
+    { name:'Moonlight Asada', file:'moonlight_asada.mp3' },
+    { name:'White Lightning', file:'White_Lightning.mp3' },
+    { name:'Super',           file:'Super.mp3' },
+    { name:'Flat Earth',      file:'flat_earth.mp3' }
   ];
 
-  var audio          = new Audio();
-  var currentTrack   = -1;
-  var isPlaying      = false;
+  var audio        = new Audio();
+  var currentTrack = 0;
+  var isPlaying    = false;
 
-  var playerHeader   = document.getElementById('playerHeader');
-  var playerBox      = document.getElementById('playerBox');
-  var playerArt      = document.getElementById('playerArt');
-  var playerTrackName= document.getElementById('playerTrackName');
-  var playerTrackNum = document.getElementById('playerTrackNum');
-  var timeElapsed    = document.getElementById('timeElapsed');
-  var timeDuration   = document.getElementById('timeDuration');
-  var scrubber       = document.getElementById('scrubber');
-  var playPauseBtn   = document.getElementById('playPauseBtn');
-  var prevBtn        = document.getElementById('prevBtn');
-  var nextBtn        = document.getElementById('nextBtn');
-  var volumeSlider   = document.getElementById('volumeSlider');
-  var trackList      = document.getElementById('trackList');
-  var divider2       = document.getElementById('divider2');
+  var playerTrackName = document.getElementById('playerTrackName');
+  var playerTrackNum  = document.getElementById('playerTrackNum');
+  var playPauseBtn    = document.getElementById('playPauseBtn');
+  var prevBtn         = document.getElementById('prevBtn');
+  var nextBtn         = document.getElementById('nextBtn');
+  var scrubber        = document.getElementById('scrubber');
+  var volumeSlider    = document.getElementById('volumeSlider');
+  var timeElapsed     = document.getElementById('timeElapsed');
+  var timeDuration    = document.getElementById('timeDuration');
+  var trackList       = document.getElementById('trackList');
 
-  audio.volume = 0.8;
+  function fmtTime(s){ var m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+(sec<10?'0':'')+sec; }
 
-  function formatTime(s) {
-    if (isNaN(s)) { return '0:00'; }
-    var m = Math.floor(s / 60);
-    var sec = Math.floor(s % 60);
-    return m + ':' + (sec < 10 ? '0' : '') + sec;
-  }
-
-  function buildTrackList() {
-    while (trackList.firstChild) { trackList.removeChild(trackList.firstChild); }
-    for (var i = 0; i < tracks.length; i++) {
-      (function(idx) {
-        var item = document.createElement('div');
-        item.className = 'track-item';
-        item.id = 'track-' + idx;
-
-        var numWrap = document.createElement('div');
-        numWrap.className = 'track-num-wrap';
-        numWrap.style.position = 'relative';
-        numWrap.style.width = '16px';
-        numWrap.style.flexShrink = '0';
-
-        var num = document.createElement('div');
-        num.className = 'track-num';
-        num.textContent = idx + 1;
-
-        var indicator = document.createElement('div');
-        indicator.className = 'track-playing-indicator';
-        indicator.innerHTML = '<div class="bar"></div><div class="bar"></div><div class="bar"></div>';
-
-        numWrap.appendChild(num);
-        numWrap.appendChild(indicator);
-
-        var label = document.createElement('div');
-        label.className = 'track-name-label';
-        label.textContent = tracks[idx].name;
-
-        item.appendChild(numWrap);
-        item.appendChild(label);
-
-        item.addEventListener('click', function() {
-          loadTrack(idx, true);
-        });
-
-        trackList.appendChild(item);
-      })(i);
-    }
-  }
-
-  function updateTrackListUI() {
-    for (var i = 0; i < tracks.length; i++) {
-      var item = document.getElementById('track-' + i);
-      if (!item) { continue; }
-      item.classList.remove('active', 'paused');
-      if (i === currentTrack) {
-        item.classList.add('active');
-        if (!isPlaying) { item.classList.add('paused'); }
-      }
-    }
-  }
-
-  function loadTrack(idx, autoplay) {
+  function loadTrack(idx, play) {
     currentTrack = idx;
     audio.src = tracks[idx].file;
     playerTrackName.textContent = tracks[idx].name;
-    playerTrackNum.textContent  = (idx + 1) + ' / ' + tracks.length;
-    scrubber.value = 0;
-    timeElapsed.textContent  = '0:00';
-    timeDuration.textContent = '0:00';
-    updateTrackListUI();
-
-    if (autoplay) {
-      audio.play();
-      isPlaying = true;
-      playPauseBtn.innerHTML = '&#9646;&#9646;';
-      playerArt.classList.add('playing');
-    }
+    playerTrackNum.textContent  = (idx+1)+' / '+tracks.length;
+    scrubber.value = 0; timeElapsed.textContent='0:00'; timeDuration.textContent='0:00';
+    var items = document.querySelectorAll('.track-item');
+    items.forEach(function(item,i){
+      item.classList.toggle('active', i===idx);
+      item.classList.remove('paused');
+    });
+    if(play){ audio.play(); isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;'; }
+    else { isPlaying=false; playPauseBtn.innerHTML='&#9654;'; }
   }
 
-  playPauseBtn.addEventListener('click', function() {
-    if (currentTrack === -1) {
-      loadTrack(0, true);
-      return;
-    }
-    if (isPlaying) {
-      audio.pause();
-      isPlaying = false;
-      playPauseBtn.innerHTML = '&#9654;';
-      playerArt.classList.remove('playing');
-      var activeItem = document.getElementById('track-' + currentTrack);
-      if (activeItem) { activeItem.classList.add('paused'); }
+  function buildTrackList() {
+    trackList.innerHTML='';
+    tracks.forEach(function(t,i){
+      var item=document.createElement('div');item.className='track-item';item.id='track-'+i;
+      var num=document.createElement('div');num.className='track-num';num.textContent=String(i+1).padStart(2,'0');
+      var eq=document.createElement('div');eq.className='eq-bars';
+      for(var b=0;b<3;b++){var bar=document.createElement('div');bar.className='bar';eq.appendChild(bar);}
+      var label=document.createElement('div');label.className='track-name-label';label.textContent=t.name;
+      item.appendChild(num);item.appendChild(eq);item.appendChild(label);
+      item.addEventListener('click',function(idx){return function(){loadTrack(idx,true);};}(i));
+      trackList.appendChild(item);
+    });
+  }
+
+  playPauseBtn.addEventListener('click', function(){
+    if(isPlaying){
+      audio.pause(); isPlaying=false; playPauseBtn.innerHTML='&#9654;';
+      var ai=document.getElementById('track-'+currentTrack);if(ai)ai.classList.add('paused');
     } else {
-      audio.play();
-      isPlaying = true;
-      playPauseBtn.innerHTML = '&#9646;&#9646;';
-      playerArt.classList.add('playing');
-      var activeItem2 = document.getElementById('track-' + currentTrack);
-      if (activeItem2) { activeItem2.classList.remove('paused'); }
+      if(!audio.src||audio.src===window.location.href) loadTrack(0,true);
+      else { audio.play(); isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;';
+        var ai2=document.getElementById('track-'+currentTrack);if(ai2)ai2.classList.remove('paused'); }
     }
   });
-
-  prevBtn.addEventListener('click', function() {
-    if (currentTrack <= 0) {
-      loadTrack(tracks.length - 1, isPlaying);
-    } else {
-      loadTrack(currentTrack - 1, isPlaying);
-    }
+  audio.addEventListener('timeupdate',function(){
+    if(!audio.duration)return;
+    scrubber.value=(audio.currentTime/audio.duration)*100;
+    timeElapsed.textContent=fmtTime(audio.currentTime);
+    timeDuration.textContent=fmtTime(audio.duration);
   });
-
-  nextBtn.addEventListener('click', function() {
-    if (currentTrack >= tracks.length - 1) {
-      loadTrack(0, isPlaying);
-    } else {
-      loadTrack(currentTrack + 1, isPlaying);
-    }
+  scrubber.addEventListener('input',function(){
+    if(!audio.duration)return;
+    audio.currentTime=(scrubber.value/100)*audio.duration;
   });
-
-  audio.addEventListener('ended', function() {
-    if (currentTrack < tracks.length - 1) {
-      loadTrack(currentTrack + 1, true);
-    } else {
-      loadTrack(0, false);
-      isPlaying = false;
-      playPauseBtn.innerHTML = '&#9654;';
-      playerArt.classList.remove('playing');
-    }
-  });
-
-  audio.addEventListener('timeupdate', function() {
-    if (!audio.duration) { return; }
-    var pct = (audio.currentTime / audio.duration) * 100;
-    scrubber.value = pct;
-    timeElapsed.textContent  = formatTime(audio.currentTime);
-    timeDuration.textContent = formatTime(audio.duration);
-  });
-
-  audio.addEventListener('loadedmetadata', function() {
-    timeDuration.textContent = formatTime(audio.duration);
-  });
-
-  scrubber.addEventListener('input', function() {
-    if (!audio.duration) { return; }
-    audio.currentTime = (scrubber.value / 100) * audio.duration;
-  });
-
-  volumeSlider.addEventListener('input', function() {
-    audio.volume = volumeSlider.value;
-  });
+  volumeSlider.addEventListener('input',function(){ audio.volume=volumeSlider.value; });
+  prevBtn.addEventListener('click',function(){ loadTrack(currentTrack<=0?tracks.length-1:currentTrack-1,isPlaying); });
+  nextBtn.addEventListener('click',function(){ loadTrack(currentTrack>=tracks.length-1?0:currentTrack+1,isPlaying); });
+  audio.addEventListener('ended',function(){ loadTrack(currentTrack<tracks.length-1?currentTrack+1:0, currentTrack<tracks.length-1); });
 
   buildTrackList();
 
-  /* ════════════════════════════════════════
-     GAMES ENGINE — PONG (vertical) + HOOPS
-     ════════════════════════════════════════ */
+  /* ════════════════════════════════
+     GAMES — PONG + HOOPS
+     ════════════════════════════════ */
   var gameCanvas   = document.getElementById('gameCanvas');
   var ctx          = gameCanvas.getContext('2d');
   var pongPauseBtn = document.getElementById('pongPauseBtn');
@@ -1425,625 +760,278 @@
   var gameRightEl  = document.getElementById('gameRight');
   var btnPong      = document.getElementById('btnPong');
   var btnHoops     = document.getElementById('btnHoops');
+  var activeGame   = 'pong';
+  var CW=400, CH=500;
 
-  var activeGame   = 'pong'; /* 'pong' or 'hoops' */
+  /* PONG */
+  var PADDLE_W=70, PADDLE_H=12, BALL_SIZE=8, WIN_SCORE=7;
+  var pongState='idle', playerScore=0, cpuScore=0, pongRaf=null;
+  var paddle    = {x:CW/2-PADDLE_W/2, y:CH-30, w:PADDLE_W, h:PADDLE_H};
+  var cpuPaddle = {x:CW/2-PADDLE_W/2, y:18,    w:PADDLE_W, h:PADDLE_H};
+  var pongBall  = {x:CW/2, y:CH/2, vx:3, vy:4, size:BALL_SIZE};
+  var mouseX=CW/2, touchX=null, keysDown={};
 
-  /* canvas dims — vertical */
-  var CW = 400, CH = 500;
+  /* HOOPS */
+  var hoopsState='idle', hoopsRaf=null;
+  var shots=0, makes=0, swishFrames=0, missFrames=0;
+  var hBall = {x:CW/2, y:CH-70, r:16, vx:0, vy:0, flying:false};
+  var hoop  = {x:CW/2, y:110, w:72, rimR:7};
+  var dragStart=null;
 
-  /* ── PONG VARS ── */
-  var PADDLE_W = 70, PADDLE_H = 12, BALL_SIZE = 8, WIN_SCORE = 7;
-  var pongState   = 'idle';
-  var playerScore = 0, cpuScore = 0;
-  var pongRaf     = null;
-  var paddle      = { x: CW/2 - PADDLE_W/2, y: CH - 30, w: PADDLE_W, h: PADDLE_H };
-  var cpuPaddle   = { x: CW/2 - PADDLE_W/2, y: 18,      w: PADDLE_W, h: PADDLE_H };
-  var pongBall    = { x: CW/2, y: CH/2, vx: 3, vy: 4, size: BALL_SIZE };
-  var mouseX      = CW/2;
-  var touchX      = null;
-  var keysDown    = {};
+  /* TOGGLE */
+  btnPong.onclick = function() {
+    if(activeGame==='pong') return;
+    activeGame='pong';
+    btnPong.className='game-toggle-btn active';
+    btnHoops.className='game-toggle-btn inactive';
+    if(hoopsRaf){cancelAnimationFrame(hoopsRaf);hoopsRaf=null;}
+    pongPauseBtn.style.display='none';
+    pongState='idle'; playerScore=0; cpuScore=0;
+    resetPongBall();
+    pongMsgEl.textContent='CLICK TO START';
+    gameLeftEl.textContent='YOU: 0'; gameRightEl.textContent='CPU: 0';
+    drawPong();
+  };
 
-  function drawHoops() {
-    ctx.fillStyle = pongPageBg;
-    ctx.fillRect(0, 0, CW, CH);
+  btnHoops.onclick = function() {
+    if(activeGame==='hoops') return;
+    activeGame='hoops';
+    btnHoops.className='game-toggle-btn active';
+    btnPong.className='game-toggle-btn inactive';
+    if(pongRaf){cancelAnimationFrame(pongRaf);pongRaf=null;}
+    pongPauseBtn.style.display='none';
+    hoopsState='idle'; shots=0; makes=0; swishFrames=0; missFrames=0;
+    hBall.x=CW/2; hBall.y=CH-70; hBall.vx=0; hBall.vy=0; hBall.flying=false;
+    dragStart=null;
+    pongMsgEl.textContent='DRAG BALL & RELEASE TO SHOOT';
+    gameLeftEl.textContent=''; gameRightEl.textContent='';
+    drawHoops();
+  };
 
-    var hx = hoop.x;
-    var hy = hoop.y;
-    var hw = hoop.w;        /* inner hoop width */
-    var rr = hoop.rimR;     /* rim tube radius */
-    var leftRimX  = hx - hw/2;
-    var rightRimX = hx + hw/2;
-
-    /* ── BACKBOARD ── */
-    /* board body */
-    ctx.fillStyle = 'rgba(0,0,0,0.12)';
-    ctx.fillRect(hx - 62, hy - 52, 124, 68);
-    /* board border */
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = 3;
-    ctx.globalAlpha = 0.7;
-    ctx.strokeRect(hx - 62, hy - 52, 124, 68);
-    ctx.globalAlpha = 1;
-    /* inner target rectangle */
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = 2;
-    ctx.globalAlpha = 0.45;
-    ctx.strokeRect(hx - 22, hy - 14, 44, 26);
-    ctx.globalAlpha = 1;
-
-    /* ── RIM SUPPORT BRACKET ── */
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = 4;
-    ctx.globalAlpha = 0.6;
-    ctx.beginPath();
-    ctx.moveTo(hx - 10, hy + 10);
-    ctx.lineTo(leftRimX, hy + 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(hx + 10, hy + 10);
-    ctx.lineTo(rightRimX, hy + 2);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    /* ── LEFT RIM ── */
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = rr * 2;
-    ctx.lineCap     = 'round';
-    ctx.globalAlpha = 0.85;
-    ctx.beginPath();
-    ctx.arc(leftRimX, hy, rr, Math.PI * 0.5, Math.PI * 1.5);
-    ctx.stroke();
-    /* flat inner face of left rim */
-    ctx.lineWidth   = rr * 1.5;
-    ctx.beginPath();
-    ctx.moveTo(leftRimX, hy - rr);
-    ctx.lineTo(leftRimX, hy + rr);
-    ctx.stroke();
-
-    /* ── RIGHT RIM ── */
-    ctx.beginPath();
-    ctx.arc(rightRimX, hy, rr, Math.PI * 1.5, Math.PI * 0.5);
-    ctx.stroke();
-    ctx.lineWidth   = rr * 1.5;
-    ctx.beginPath();
-    ctx.moveTo(rightRimX, hy - rr);
-    ctx.lineTo(rightRimX, hy + rr);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-    ctx.lineCap = 'butt';
-
-    /* ── NET ── */
-    var netTop  = hy + rr;
-    var netBot  = hy + 52;
-    var netL    = leftRimX  + rr;
-    var netR    = rightRimX - rr;
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = 1.2;
-    ctx.globalAlpha = 0.3;
-    /* vertical strands */
-    var strands = 6;
-    for (var ns = 0; ns <= strands; ns++) {
-      var t      = ns / strands;
-      var topNX  = netL + (netR - netL) * t;
-      var botNX  = (netL + netR) / 2 + ((topNX - (netL + netR)/2) * 0.5);
-      ctx.beginPath();
-      ctx.moveTo(topNX, netTop);
-      ctx.quadraticCurveTo(topNX, netTop + (netBot - netTop) * 0.5, botNX, netBot);
-      ctx.stroke();
+  /* INPUT */
+  gameCanvas.addEventListener('mousemove',function(e){
+    var r=gameCanvas.getBoundingClientRect();
+    mouseX=(e.clientX-r.left)*(CW/r.width);
+    if(activeGame==='hoops'&&dragStart&&!hBall.flying){
+      dragStart.curX=(e.clientX-r.left)*(CW/r.width);
+      dragStart.curY=(e.clientY-r.top)*(CH/r.height);
+      drawHoops();
     }
-    /* horizontal strands */
-    for (var nh = 1; nh <= 4; nh++) {
-      var nt    = nh / 5;
-      var ny    = netTop + (netBot - netTop) * nt;
-      var slack = nh * 2.5;
-      var nL    = netL  + (((netL+netR)/2 - netL) * nt * 0.5) - slack;
-      var nR    = netR  - (((netL+netR)/2 - netR) * nt * 0.5) + slack;
-      ctx.beginPath();
-      ctx.moveTo(nL, ny);
-      ctx.lineTo(nR, ny);
-      ctx.stroke();
+  });
+  gameCanvas.addEventListener('touchmove',function(e){
+    e.stopPropagation();
+    var r=gameCanvas.getBoundingClientRect();
+    touchX=(e.touches[0].clientX-r.left)*(CW/r.width);
+    if(activeGame==='pong'&&pongState==='playing') e.preventDefault();
+    if(activeGame==='hoops'&&dragStart&&!hBall.flying){
+      e.preventDefault();
+      dragStart.curX=(e.touches[0].clientX-r.left)*(CW/r.width);
+      dragStart.curY=(e.touches[0].clientY-r.top)*(CH/r.height);
+      drawHoops();
     }
-    ctx.globalAlpha = 1;
+  },{passive:false});
+  gameCanvas.addEventListener('touchend',function(){touchX=null;if(activeGame==='hoops')hoopsFlick();});
+  gameCanvas.addEventListener('click',function(){
+    if(activeGame==='pong'){
+      if(pongState==='idle'||pongState==='over') startPong();
+      else if(pongState==='paused') resumePong();
+    }
+  });
+  gameCanvas.addEventListener('mousedown',function(e){
+    if(activeGame!=='hoops'||hBall.flying) return;
+    var r=gameCanvas.getBoundingClientRect();
+    dragStart={
+      startX:(e.clientX-r.left)*(CW/r.width), startY:(e.clientY-r.top)*(CH/r.height),
+      curX:(e.clientX-r.left)*(CW/r.width),   curY:(e.clientY-r.top)*(CH/r.height)
+    };
+  });
+  gameCanvas.addEventListener('mouseup',function(){if(activeGame==='hoops')hoopsFlick();});
+  gameCanvas.addEventListener('touchstart',function(e){
+    if(activeGame!=='hoops'||hBall.flying) return;
+    var r=gameCanvas.getBoundingClientRect();
+    dragStart={
+      startX:(e.touches[0].clientX-r.left)*(CW/r.width), startY:(e.touches[0].clientY-r.top)*(CH/r.height),
+      curX:(e.touches[0].clientX-r.left)*(CW/r.width),   curY:(e.touches[0].clientY-r.top)*(CH/r.height)
+    };
+  },{passive:true});
+  pongPauseBtn.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(pongState==='playing') pausePong();
+    else if(pongState==='paused') resumePong();
+  });
+  document.addEventListener('keydown',function(e){
+    keysDown[e.key]=true;
+    if(activeGame==='pong'&&(e.key==='ArrowLeft'||e.key==='ArrowRight')&&pongState==='playing') e.preventDefault();
+    if(activeGame==='pong'&&(e.key==='p'||e.key==='P')){if(pongState==='playing')pausePong();else if(pongState==='paused')resumePong();}
+  });
+  document.addEventListener('keyup',function(e){keysDown[e.key]=false;});
 
-    /* ── SWISH / MISS TEXT ── */
-    ctx.textAlign = 'center';
-    if (swishFrames > 0) {
-      ctx.fillStyle   = '#1a1a1a';
-      ctx.globalAlpha = Math.min(swishFrames / 20, 1) * 0.8;
-      ctx.font        = 'bold 32px "Bebas Neue", sans-serif';
-      ctx.fillText('SWISH!', CW/2, CH/2);
-      ctx.globalAlpha = 1;
+  /* PONG FUNCTIONS */
+  function drawPong(){
+    ctx.fillStyle=pongPageBg; ctx.fillRect(0,0,CW,CH);
+    ctx.save(); ctx.setLineDash([6,6]); ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,CH/2); ctx.lineTo(CW,CH/2); ctx.stroke(); ctx.restore();
+    ctx.fillStyle='#1a1a1a';
+    ctx.fillRect(paddle.x,paddle.y,paddle.w,paddle.h);
+    ctx.fillRect(cpuPaddle.x,cpuPaddle.y,cpuPaddle.w,cpuPaddle.h);
+    ctx.beginPath(); ctx.arc(pongBall.x,pongBall.y,pongBall.size,0,Math.PI*2); ctx.fill();
+  }
+  function startPong(){
+    playerScore=0; cpuScore=0; paddle.x=cpuPaddle.x=CW/2-PADDLE_W/2;
+    pongState='playing'; pongPauseBtn.style.display='block'; pongPauseBtn.textContent='PAUSE';
+    pongMsgEl.textContent='FIRST TO '+WIN_SCORE+' - P TO PAUSE';
+    gameLeftEl.textContent='YOU: 0'; gameRightEl.textContent='CPU: 0';
+    resetPongBall();
+    if(pongRaf) cancelAnimationFrame(pongRaf);
+    pongRaf=requestAnimationFrame(pongLoop);
+  }
+  function pausePong(){
+    pongState='paused'; pongPauseBtn.textContent='RESUME'; pongMsgEl.textContent='PAUSED';
+    if(pongRaf){cancelAnimationFrame(pongRaf);pongRaf=null;}
+    drawPong();
+  }
+  function resumePong(){
+    pongState='playing'; pongPauseBtn.textContent='PAUSE';
+    pongMsgEl.textContent='FIRST TO '+WIN_SCORE+' - P TO PAUSE';
+    pongRaf=requestAnimationFrame(pongLoop);
+  }
+  function endPong(w){
+    pongState='over'; pongPauseBtn.style.display='none';
+    if(pongRaf){cancelAnimationFrame(pongRaf);pongRaf=null;}
+    pongMsgEl.textContent=(w==='player'?'YOU WIN!':'CPU WINS!')+' - CLICK TO PLAY AGAIN';
+    drawPong();
+  }
+  function resetPongBall(){
+    pongBall.x=CW/2; pongBall.y=CH/2;
+    pongBall.vx=(2+Math.random())*(Math.random()>0.5?1:-1);
+    pongBall.vy=(3.5+Math.random())*(Math.random()>0.5?1:-1);
+  }
+  function pongLoop(){
+    if(pongState!=='playing') return;
+    if(keysDown['ArrowLeft'])  paddle.x-=6;
+    if(keysDown['ArrowRight']) paddle.x+=6;
+    var tx=(touchX!==null?touchX:mouseX)-PADDLE_W/2;
+    paddle.x+=(tx-paddle.x)*0.2;
+    paddle.x=Math.max(0,Math.min(CW-PADDLE_W,paddle.x));
+    var cc=cpuPaddle.x+PADDLE_W/2, cs=Math.min(3+Math.abs(pongBall.vy)*0.1,5.5);
+    if(pongBall.vy<0){if(cc<pongBall.x-4)cpuPaddle.x+=cs;else if(cc>pongBall.x+4)cpuPaddle.x-=cs;}
+    else{if(cc<CW/2-8)cpuPaddle.x+=cs*0.3;else if(cc>CW/2+8)cpuPaddle.x-=cs*0.3;}
+    cpuPaddle.x=Math.max(0,Math.min(CW-PADDLE_W,cpuPaddle.x));
+    pongBall.x+=pongBall.vx; pongBall.y+=pongBall.vy;
+    if(pongBall.x-pongBall.size<0){pongBall.x=pongBall.size;pongBall.vx*=-1;}
+    if(pongBall.x+pongBall.size>CW){pongBall.x=CW-pongBall.size;pongBall.vx*=-1;}
+    if(pongBall.vy>0&&pongBall.y+pongBall.size>=paddle.y&&pongBall.y+pongBall.size<=paddle.y+paddle.h+4&&pongBall.x>=paddle.x&&pongBall.x<=paddle.x+paddle.w){
+      pongBall.y=paddle.y-pongBall.size;
+      pongBall.vx=((pongBall.x-(paddle.x+PADDLE_W/2))/(PADDLE_W/2))*5;
+      pongBall.vy=-Math.min(Math.abs(pongBall.vy)*1.05,11);
     }
-    if (missFrames > 0) {
-      ctx.fillStyle   = '#1a1a1a';
-      ctx.globalAlpha = Math.min(missFrames / 20, 1) * 0.35;
-      ctx.font        = 'bold 24px "Bebas Neue", sans-serif';
-      ctx.fillText('BRICK', CW/2, CH/2);
-      ctx.globalAlpha = 1;
+    if(pongBall.vy<0&&pongBall.y-pongBall.size<=cpuPaddle.y+cpuPaddle.h&&pongBall.y-pongBall.size>=cpuPaddle.y-4&&pongBall.x>=cpuPaddle.x&&pongBall.x<=cpuPaddle.x+cpuPaddle.w){
+      pongBall.y=cpuPaddle.y+cpuPaddle.h+pongBall.size;
+      pongBall.vx=((pongBall.x-(cpuPaddle.x+PADDLE_W/2))/(PADDLE_W/2))*5;
+      pongBall.vy=Math.min(Math.abs(pongBall.vy)*1.05,11);
     }
+    if(pongBall.y-pongBall.size>CH){cpuScore++;gameLeftEl.textContent='YOU: '+playerScore;gameRightEl.textContent='CPU: '+cpuScore;if(cpuScore>=WIN_SCORE){endPong('cpu');return;}resetPongBall();}
+    if(pongBall.y+pongBall.size<0){playerScore++;gameLeftEl.textContent='YOU: '+playerScore;gameRightEl.textContent='CPU: '+cpuScore;if(playerScore>=WIN_SCORE){endPong('player');return;}resetPongBall();}
+    drawPong();
+    pongRaf=requestAnimationFrame(pongLoop);
+  }
 
-    /* ── DRAG ARROW ── */
-    if (dragStart && !hBall.flying) {
-      var ddx = dragStart.curX - dragStart.startX;
-      var ddy = dragStart.curY - dragStart.startY;
-      if (Math.abs(ddx) > 3 || Math.abs(ddy) > 3) {
-        ctx.strokeStyle = '#1a1a1a';
-        ctx.globalAlpha = 0.25;
-        ctx.lineWidth   = 2;
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(hBall.x, hBall.y);
-        ctx.lineTo(hBall.x - ddx * 1.8, hBall.y - ddy * 1.8);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.globalAlpha = 1;
+  /* HOOPS FUNCTIONS */
+  function drawHoops(){
+    ctx.fillStyle=pongPageBg; ctx.fillRect(0,0,CW,CH);
+    var hx=hoop.x, hy=hoop.y, lx=hx-hoop.w/2, rx=hx+hoop.w/2;
+    /* backboard */
+    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(hx-60,hy-48,120,60);
+    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=3; ctx.globalAlpha=0.6;
+    ctx.strokeRect(hx-60,hy-48,120,60);
+    ctx.globalAlpha=0.35; ctx.lineWidth=1.5; ctx.strokeRect(hx-20,hy-14,40,22);
+    ctx.globalAlpha=1;
+    /* rim */
+    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=hoop.rimR*2; ctx.lineCap='round'; ctx.globalAlpha=0.85;
+    ctx.beginPath(); ctx.moveTo(lx,hy); ctx.lineTo(rx,hy); ctx.stroke();
+    ctx.globalAlpha=1; ctx.lineCap='butt';
+    /* net */
+    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1; ctx.globalAlpha=0.25;
+    var ntop=hy+hoop.rimR, nbot=hy+48;
+    for(var n=0;n<=5;n++){
+      var t=n/5, nx=lx+hoop.rimR+(rx-lx-hoop.rimR*2)*t, nbx=hx+(nx-hx)*0.45;
+      ctx.beginPath(); ctx.moveTo(nx,ntop); ctx.lineTo(nbx,nbot); ctx.stroke();
+    }
+    for(var m=1;m<=3;m++){
+      var my=ntop+(nbot-ntop)*(m/4);
+      ctx.beginPath(); ctx.moveTo(lx+hoop.rimR,my); ctx.lineTo(rx-hoop.rimR,my); ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    /* swish / miss */
+    ctx.textAlign='center';
+    if(swishFrames>0){ctx.fillStyle='#1a1a1a';ctx.globalAlpha=Math.min(swishFrames/20,1)*0.75;ctx.font='bold 30px sans-serif';ctx.fillText('SWISH!',CW/2,CH/2);ctx.globalAlpha=1;}
+    if(missFrames>0){ctx.fillStyle='#1a1a1a';ctx.globalAlpha=Math.min(missFrames/20,1)*0.35;ctx.font='bold 22px sans-serif';ctx.fillText('BRICK',CW/2,CH/2);ctx.globalAlpha=1;}
+    /* drag guide */
+    if(dragStart&&!hBall.flying){
+      var ddx=dragStart.curX-dragStart.startX, ddy=dragStart.curY-dragStart.startY;
+      if(Math.abs(ddx)>3||Math.abs(ddy)>3){
+        ctx.strokeStyle='#1a1a1a'; ctx.globalAlpha=0.2; ctx.lineWidth=2; ctx.setLineDash([5,5]);
+        ctx.beginPath(); ctx.moveTo(hBall.x,hBall.y); ctx.lineTo(hBall.x-ddx*2,hBall.y-ddy*2); ctx.stroke();
+        ctx.setLineDash([]); ctx.globalAlpha=1;
       }
     }
-
-    /* ── BASKETBALL ── */
-    var bx = hBall.x, by = hBall.y, br = hBall.r;
-
-    /* main orange body */
-    var grad = ctx.createRadialGradient(bx - br*0.3, by - br*0.3, br*0.1, bx, by, br);
-    grad.addColorStop(0,   '#ff8c00');
-    grad.addColorStop(0.6, '#e05c00');
-    grad.addColorStop(1,   '#a03300');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(bx, by, br, 0, Math.PI * 2);
-    ctx.fill();
-
-    /* seam lines — black */
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth   = 1.5;
-    ctx.globalAlpha = 0.75;
-    /* vertical curved seam */
-    ctx.beginPath();
-    ctx.moveTo(bx, by - br);
-    ctx.bezierCurveTo(bx + br * 0.5, by - br * 0.3, bx + br * 0.5, by + br * 0.3, bx, by + br);
-    ctx.stroke();
-    /* opposite vertical seam */
-    ctx.beginPath();
-    ctx.moveTo(bx, by - br);
-    ctx.bezierCurveTo(bx - br * 0.5, by - br * 0.3, bx - br * 0.5, by + br * 0.3, bx, by + br);
-    ctx.stroke();
-    /* horizontal equator seam */
-    ctx.beginPath();
-    ctx.moveTo(bx - br, by);
-    ctx.bezierCurveTo(bx - br * 0.3, by - br * 0.45, bx + br * 0.3, by - br * 0.45, bx + br, by);
-    ctx.stroke();
-    /* lower curved seam */
-    ctx.beginPath();
-    ctx.moveTo(bx - br, by);
-    ctx.bezierCurveTo(bx - br * 0.3, by + br * 0.45, bx + br * 0.3, by + br * 0.45, bx + br, by);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-
-    /* shine */
-    ctx.fillStyle   = 'rgba(255,255,255,0.18)';
-    ctx.beginPath();
-    ctx.arc(bx - br*0.28, by - br*0.28, br * 0.28, 0, Math.PI * 2);
-    ctx.fill();
-
-    /* ── IDLE HINT ── */
-    if (hoopsState === 'idle' && !hBall.flying) {
-      ctx.fillStyle   = '#1a1a1a';
-      ctx.globalAlpha = 0.25;
-      ctx.font        = '11px "DM Mono", monospace';
-      ctx.textAlign   = 'center';
-      ctx.fillText('DRAG BALL & RELEASE TO SHOOT', CW/2, CH - 14);
-      ctx.globalAlpha = 1;
-    }
-    ctx.textAlign = 'left';
+    /* ball */
+    var bx=hBall.x, by=hBall.y, br=hBall.r;
+    var gr=ctx.createRadialGradient(bx-br*0.3,by-br*0.3,br*0.05,bx,by,br);
+    gr.addColorStop(0,'#ff8c00'); gr.addColorStop(0.6,'#e05500'); gr.addColorStop(1,'#9e3200');
+    ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(bx,by,br,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.5; ctx.globalAlpha=0.7;
+    ctx.beginPath();ctx.moveTo(bx,by-br);ctx.bezierCurveTo(bx+br*0.5,by-br*0.3,bx+br*0.5,by+br*0.3,bx,by+br);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx,by-br);ctx.bezierCurveTo(bx-br*0.5,by-br*0.3,bx-br*0.5,by+br*0.3,bx,by+br);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx-br,by);ctx.bezierCurveTo(bx-br*0.3,by-br*0.45,bx+br*0.3,by-br*0.45,bx+br,by);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx-br,by);ctx.bezierCurveTo(bx-br*0.3,by+br*0.45,bx+br*0.3,by+br*0.45,bx+br,by);ctx.stroke();
+    ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.beginPath(); ctx.arc(bx-br*0.28,by-br*0.28,br*0.25,0,Math.PI*2); ctx.fill();
+    if(!hBall.flying&&shots===0){ctx.fillStyle='#1a1a1a';ctx.globalAlpha=0.22;ctx.font='11px monospace';ctx.fillText('DRAG BALL & RELEASE TO SHOOT',CW/2,CH-14);ctx.globalAlpha=1;}
+    ctx.textAlign='left';
   }
-
-  function hoopsFlick(touchEvt) {
-    if (!dragStart || hBall.flying) { dragStart = null; return; }
-    var dx = dragStart.curX - dragStart.startX;
-    var dy = dragStart.curY - dragStart.startY;
-    if (Math.abs(dx) < 4 && Math.abs(dy) < 4) { dragStart = null; return; }
-    /* flip direction — flick opposite of drag */
-    var power = Math.min(Math.sqrt(dx*dx + dy*dy), 200);
-    var angle = Math.atan2(dy, dx);
-    hBall.vx    = -Math.cos(angle) * power * 0.11;
-    hBall.vy    = -Math.sin(angle) * power * 0.11;
-    /* clamp so ball always has enough upward force */
-    if (hBall.vy > -4) { hBall.vy = -4; }
-    hBall.flying = true;
-    ballResting  = false;
-    shots++;
-    dragStart    = null;
-    hoopsState   = 'flying';
-    updateHoopsScore();
-    if (hoopsRaf) { cancelAnimationFrame(hoopsRaf); }
-    hoopsRaf = requestAnimationFrame(hoopsLoop);
+  function hoopsFlick(){
+    if(!dragStart||hBall.flying){dragStart=null;return;}
+    var dx=dragStart.curX-dragStart.startX, dy=dragStart.curY-dragStart.startY;
+    if(Math.abs(dx)<5&&Math.abs(dy)<5){dragStart=null;return;}
+    var power=Math.min(Math.sqrt(dx*dx+dy*dy),200), angle=Math.atan2(dy,dx);
+    hBall.vx=-Math.cos(angle)*power*0.12;
+    hBall.vy=-Math.sin(angle)*power*0.12;
+    if(hBall.vy>-5) hBall.vy=-5;
+    hBall.flying=true; shots++; dragStart=null;
+    var p=Math.round((makes/shots)*100);
+    gameLeftEl.textContent=makes+' / '+shots; gameRightEl.textContent=p+'%';
+    if(hoopsRaf) cancelAnimationFrame(hoopsRaf);
+    hoopsRaf=requestAnimationFrame(hoopsLoop);
   }
-
-  function updateHoopsScore() {
-    if (shots === 0) { gameLeftEl.textContent = ''; gameRightEl.textContent = ''; return; }
-    var pct = Math.round((makes / shots) * 100);
-    gameLeftEl.textContent  = makes + ' / ' + shots;
-    gameRightEl.textContent = pct + '%';
-  }
-
-  function hoopsLoop() {
-    if (!hBall.flying) { return; }
-
-    /* gravity */
-    hBall.vy += 0.3;
-    hBall.x  += hBall.vx;
-    hBall.y  += hBall.vy;
-
-    /* wall bounce */
-    if (hBall.x - hBall.r < 0)  { hBall.x = hBall.r;      hBall.vx *= -0.55; }
-    if (hBall.x + hBall.r > CW) { hBall.x = CW - hBall.r; hBall.vx *= -0.55; }
-
-    /* rim collision — left */
-    var leftRimX  = hoop.x - hoop.w/2;
-    var rightRimX = hoop.x + hoop.w/2;
-    var rimDL = Math.sqrt(Math.pow(hBall.x - leftRimX, 2) + Math.pow(hBall.y - hoop.y, 2));
-    if (rimDL < hBall.r + hoop.rimR) {
-      var angL = Math.atan2(hBall.y - hoop.y, hBall.x - leftRimX);
-      hBall.x = leftRimX  + Math.cos(angL) * (hBall.r + hoop.rimR + 1);
-      hBall.y = hoop.y    + Math.sin(angL) * (hBall.r + hoop.rimR + 1);
-      var spd = Math.sqrt(hBall.vx*hBall.vx + hBall.vy*hBall.vy);
-      hBall.vx = Math.cos(angL) * spd * 0.55;
-      hBall.vy = Math.sin(angL) * spd * 0.55;
+  function hoopsLoop(){
+    if(!hBall.flying) return;
+    hBall.vy+=0.28; hBall.x+=hBall.vx; hBall.y+=hBall.vy;
+    if(hBall.x-hBall.r<0){hBall.x=hBall.r;hBall.vx*=-0.6;}
+    if(hBall.x+hBall.r>CW){hBall.x=CW-hBall.r;hBall.vx*=-0.6;}
+    var lx=hoop.x-hoop.w/2, rx=hoop.x+hoop.w/2;
+    var dL=Math.sqrt(Math.pow(hBall.x-lx,2)+Math.pow(hBall.y-hoop.y,2));
+    if(dL<hBall.r+hoop.rimR){var aL=Math.atan2(hBall.y-hoop.y,hBall.x-lx);hBall.x=lx+Math.cos(aL)*(hBall.r+hoop.rimR+1);hBall.y=hoop.y+Math.sin(aL)*(hBall.r+hoop.rimR+1);var spL=Math.sqrt(hBall.vx*hBall.vx+hBall.vy*hBall.vy)*0.5;hBall.vx=Math.cos(aL)*spL;hBall.vy=Math.sin(aL)*spL;}
+    var dR=Math.sqrt(Math.pow(hBall.x-rx,2)+Math.pow(hBall.y-hoop.y,2));
+    if(dR<hBall.r+hoop.rimR){var aR=Math.atan2(hBall.y-hoop.y,hBall.x-rx);hBall.x=rx+Math.cos(aR)*(hBall.r+hoop.rimR+1);hBall.y=hoop.y+Math.sin(aR)*(hBall.r+hoop.rimR+1);var spR=Math.sqrt(hBall.vx*hBall.vx+hBall.vy*hBall.vy)*0.5;hBall.vx=Math.cos(aR)*spR;hBall.vy=Math.sin(aR)*spR;}
+    if(hBall.vy>0&&hBall.y>=hoop.y&&hBall.y<=hoop.y+22&&hBall.x>lx+hoop.rimR+hBall.r*0.5&&hBall.x<rx-hoop.rimR-hBall.r*0.5){
+      makes++; swishFrames=35;
+      var p2=Math.round((makes/shots)*100);
+      gameLeftEl.textContent=makes+' / '+shots; gameRightEl.textContent=p2+'%';
     }
-    /* rim collision — right */
-    var rimDR = Math.sqrt(Math.pow(hBall.x - rightRimX, 2) + Math.pow(hBall.y - hoop.y, 2));
-    if (rimDR < hBall.r + hoop.rimR) {
-      var angR = Math.atan2(hBall.y - hoop.y, hBall.x - rightRimX);
-      hBall.x = rightRimX + Math.cos(angR) * (hBall.r + hoop.rimR + 1);
-      hBall.y = hoop.y    + Math.sin(angR) * (hBall.r + hoop.rimR + 1);
-      var spd2 = Math.sqrt(hBall.vx*hBall.vx + hBall.vy*hBall.vy);
-      hBall.vx = Math.cos(angR) * spd2 * 0.55;
-      hBall.vy = Math.sin(angR) * spd2 * 0.55;
-    }
-
-    /* score — ball passes downward through hoop opening */
-    if (hBall.vy > 0 &&
-        hBall.y >= hoop.y &&
-        hBall.y <= hoop.y + 20 &&
-        hBall.x > leftRimX  + hoop.rimR + hBall.r * 0.4 &&
-        hBall.x < rightRimX - hoop.rimR - hBall.r * 0.4) {
-      makes++;
-      swishFrames = 35;
-      updateHoopsScore();
-    }
-
-    /* decay flashes */
-    if (swishFrames > 0) { swishFrames--; }
-    if (missFrames  > 0) { missFrames--;  }
-
-    /* out of bounds — reset */
-    if (hBall.y + hBall.r > CH + 30 || hBall.y + hBall.r < -60) {
-      if (swishFrames === 0) { missFrames = 28; }
-      resetHoopsBall();
+    if(swishFrames>0) swishFrames--;
+    if(missFrames>0)  missFrames--;
+    if(hBall.y+hBall.r>CH+40||hBall.y+hBall.r<-80){
+      if(swishFrames===0) missFrames=28;
+      hBall.x=CW/2; hBall.y=CH-70; hBall.vx=0; hBall.vy=0; hBall.flying=false; hoopsState='idle';
+      (function fade(){if(swishFrames>0)swishFrames--;if(missFrames>0)missFrames--;drawHoops();if(swishFrames>0||missFrames>0)requestAnimationFrame(fade);})();
       return;
     }
-
     drawHoops();
-    if (hBall.flying) {
-      hoopsRaf = requestAnimationFrame(hoopsLoop);
-    }
+    hoopsRaf=requestAnimationFrame(hoopsLoop);
   }
 
-  function resetHoopsBall() {
-    hBall.x = CW/2; hBall.y = CH - 70;
-    hBall.vx = 0; hBall.vy = 0;
-    hBall.flying = false;
-    hoopsState   = 'idle';
-    if (swishFrames > 0 || missFrames > 0) {
-      /* keep drawing until flash fades */
-      var fadeLoop = function() {
-        if (swishFrames > 0) { swishFrames--; }
-        if (missFrames  > 0) { missFrames--;  }
-        drawHoops();
-        if (swishFrames > 0 || missFrames > 0) { requestAnimationFrame(fadeLoop); }
-      };
-      requestAnimationFrame(fadeLoop);
-    } else {
-      drawHoops();
-    }
-  }
-
-  /* ── TOGGLE ── */
-  btnPong.addEventListener('click', function() {
-    if (activeGame === 'pong') { return; }
-    activeGame = 'pong';
-    btnPong.className  = 'game-toggle-btn active';
-    btnHoops.className = 'game-toggle-btn inactive';
-    stopHoops();
-    pongState = 'idle';
-    pongPauseBtn.style.display = 'none';
-    pongMsgEl.textContent = 'CLICK TO START · MOUSE OR ↑↓ KEYS';
-    gameLeftEl.textContent  = 'YOU: 0';
-    gameRightEl.textContent = 'CPU: 0';
-    playerScore = 0; cpuScore = 0;
-    resetPongBall();
-    drawPong();
-  });
-
-  btnHoops.addEventListener('click', function() {
-    if (activeGame === 'hoops') { return; }
-    activeGame = 'hoops';
-    btnHoops.className = 'game-toggle-btn active';
-    btnPong.className  = 'game-toggle-btn inactive';
-    stopPong();
-    pongPauseBtn.style.display = 'none';
-    hoopsState = 'idle';
-    shots = 0; makes = 0;
-    hBall.x = CW/2; hBall.y = CH - 70; hBall.vx = 0; hBall.vy = 0; hBall.flying = false;
-    ballResting = true;
-    pongMsgEl.textContent = 'DRAG & FLICK THE BALL UP INTO THE HOOP';
-    gameLeftEl.textContent  = '';
-    gameRightEl.textContent = '';
-    drawHoops();
-  });
-
-  /* ── SHARED INPUT ── */
-  gameCanvas.addEventListener('mousemove', function(e) {
-    var rect   = gameCanvas.getBoundingClientRect();
-    var scaleX = CW / rect.width;
-    var scaleY = CH / rect.height;
-    mouseX = (e.clientX - rect.left) * scaleX;
-    if (activeGame === 'hoops' && dragStart && !hBall.flying) {
-      /* just track for draw */
-    }
-  });
-
-  gameCanvas.addEventListener('touchmove', function(e) {
-    e.stopPropagation();
-    var rect   = gameCanvas.getBoundingClientRect();
-    var scaleX = CW / rect.width;
-    var scaleY = CH / rect.height;
-    touchX = (e.touches[0].clientX - rect.left) * scaleX;
-    if (activeGame === 'hoops' && dragStart && !hBall.flying) {
-      dragStart.curX = (e.touches[0].clientX - rect.left) * scaleX;
-      dragStart.curY = (e.touches[0].clientY - rect.top)  * scaleY;
-    }
-    if (activeGame === 'pong' && pongState === 'playing') { e.preventDefault(); }
-  }, { passive: false });
-
-  gameCanvas.addEventListener('touchend', function(e) {
-    touchX = null;
-    if (activeGame === 'hoops') { hoopsFlick(e); }
-  });
-
-  /* Pong: click to start/resume */
-  gameCanvas.addEventListener('click', function() {
-    if (activeGame === 'pong') {
-      if (pongState === 'idle' || pongState === 'over') { startPong(); }
-      else if (pongState === 'paused') { resumePong(); }
-    }
-  });
-
-  /* Hoops: mousedown/up for drag flick */
-  gameCanvas.addEventListener('mousedown', function(e) {
-    if (activeGame !== 'hoops' || hBall.flying) { return; }
-    var rect   = gameCanvas.getBoundingClientRect();
-    var scaleX = CW / rect.width;
-    var scaleY = CH / rect.height;
-    dragStart = {
-      startX: (e.clientX - rect.left) * scaleX,
-      startY: (e.clientY - rect.top)  * scaleY,
-      curX:   (e.clientX - rect.left) * scaleX,
-      curY:   (e.clientY - rect.top)  * scaleY
-    };
-  });
-
-  gameCanvas.addEventListener('mousemove', function(e) {
-    var rect   = gameCanvas.getBoundingClientRect();
-    var scaleX = CW / rect.width;
-    var scaleY = CH / rect.height;
-    mouseX = (e.clientX - rect.left) * scaleX;
-    if (activeGame === 'hoops' && dragStart && !hBall.flying) {
-      dragStart.curX = (e.clientX - rect.left) * scaleX;
-      dragStart.curY = (e.clientY - rect.top)  * scaleY;
-      if (hoopsState === 'idle') { hoopsState = 'ready'; }
-      drawHoops();
-    }
-  });
-
-  gameCanvas.addEventListener('mouseup', function(e) {
-    if (activeGame !== 'hoops' || !dragStart || hBall.flying) { dragStart = null; return; }
-    var rect   = gameCanvas.getBoundingClientRect();
-    var scaleX = CW / rect.width;
-    var scaleY = CH / rect.height;
-    dragStart.curX = (e.clientX - rect.left) * scaleX;
-    dragStart.curY = (e.clientY - rect.top)  * scaleY;
-    hoopsFlick(null);
-  });
-
-  gameCanvas.addEventListener('touchstart', function(e) {
-    if (activeGame !== 'hoops' || hBall.flying) { return; }
-    var rect   = gameCanvas.getBoundingClientRect();
-    var scaleX = CW / rect.width;
-    var scaleY = CH / rect.height;
-    dragStart = {
-      startX: (e.touches[0].clientX - rect.left) * scaleX,
-      startY: (e.touches[0].clientY - rect.top)  * scaleY,
-      curX:   (e.touches[0].clientX - rect.left) * scaleX,
-      curY:   (e.touches[0].clientY - rect.top)  * scaleY
-    };
-    hoopsState = 'ready';
-  }, { passive: true });
-
-  pongPauseBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    if (pongState === 'playing')     { pausePong(); }
-    else if (pongState === 'paused') { resumePong(); }
-  });
-
-  document.addEventListener('keydown', function(e) {
-    keysDown[e.key] = true;
-    if (activeGame === 'pong') {
-      if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && pongState === 'playing') { e.preventDefault(); }
-      if (e.key === 'p' || e.key === 'P') {
-        if (pongState === 'playing')      { pausePong(); }
-        else if (pongState === 'paused')  { resumePong(); }
-      }
-    }
-  });
-  document.addEventListener('keyup', function(e) { keysDown[e.key] = false; });
-
-  /* ════════════ PONG FUNCTIONS ════════════ */
-  function startPong() {
-    playerScore = 0; cpuScore = 0;
-    paddle.x    = CW/2 - PADDLE_W/2;
-    cpuPaddle.x = CW/2 - PADDLE_W/2;
-    pongState   = 'playing';
-    pongPauseBtn.style.display = 'block';
-    pongPauseBtn.textContent   = 'PAUSE';
-    pongMsgEl.textContent = 'FIRST TO ' + WIN_SCORE + ' · P TO PAUSE';
-    updatePongScore();
-    resetPongBall();
-    if (pongRaf) { cancelAnimationFrame(pongRaf); }
-    pongRaf = requestAnimationFrame(pongLoop);
-  }
-
-  function pausePong() {
-    pongState = 'paused';
-    pongPauseBtn.textContent = 'RESUME';
-    pongMsgEl.textContent = 'PAUSED — CLICK OR P TO RESUME';
-    if (pongRaf) { cancelAnimationFrame(pongRaf); pongRaf = null; }
-    drawPong();
-  }
-
-  function resumePong() {
-    pongState = 'playing';
-    pongPauseBtn.textContent = 'PAUSE';
-    pongMsgEl.textContent = 'FIRST TO ' + WIN_SCORE + ' · P TO PAUSE';
-    pongRaf = requestAnimationFrame(pongLoop);
-  }
-
-  function stopPong() {
-    pongState = 'idle';
-    if (pongRaf) { cancelAnimationFrame(pongRaf); pongRaf = null; }
-  }
-
-  function endPong(winner) {
-    pongState = 'over';
-    pongPauseBtn.style.display = 'none';
-    if (pongRaf) { cancelAnimationFrame(pongRaf); pongRaf = null; }
-    pongMsgEl.textContent = (winner === 'player' ? 'YOU WIN! 🎉' : 'CPU WINS!') + ' — CLICK TO PLAY AGAIN';
-    drawPong();
-  }
-
-  function resetPongBall() {
-    pongBall.x  = CW/2; pongBall.y = CH/2;
-    var dir = Math.random() > 0.5 ? 1 : -1;
-    pongBall.vx = (2 + Math.random()) * (Math.random() > 0.5 ? 1 : -1);
-    pongBall.vy = (3.5 + Math.random()) * dir;
-  }
-
-  function updatePongScore() {
-    gameLeftEl.textContent  = 'YOU: ' + playerScore;
-    gameRightEl.textContent = 'CPU: ' + cpuScore;
-  }
-
-  function drawPong() {
-    ctx.fillStyle = pongPageBg;
-    ctx.fillRect(0, 0, CW, CH);
-    /* center dashed line */
-    ctx.save();
-    ctx.setLineDash([6,6]);
-    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(0, CH/2); ctx.lineTo(CW, CH/2); ctx.stroke();
-    ctx.restore();
-    /* paddles */
-    ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
-    ctx.fillRect(cpuPaddle.x, cpuPaddle.y, cpuPaddle.w, cpuPaddle.h);
-    /* ball */
-    ctx.beginPath();
-    ctx.arc(pongBall.x, pongBall.y, pongBall.size, 0, Math.PI*2);
-    ctx.fill();
-  }
-
-  function pongLoop() {
-    if (pongState !== 'playing') { return; }
-
-    /* player paddle — keyboard */
-    if (keysDown['ArrowLeft'])  { paddle.x -= 6; }
-    if (keysDown['ArrowRight']) { paddle.x += 6; }
-
-    /* player paddle — mouse/touch smooth follow */
-    var targetX = (touchX !== null ? touchX : mouseX) - PADDLE_W/2;
-    paddle.x += (targetX - paddle.x) * 0.2;
-    paddle.x  = Math.max(0, Math.min(CW - PADDLE_W, paddle.x));
-
-    /* CPU paddle AI */
-    var cpuCX   = cpuPaddle.x + PADDLE_W/2;
-    var cpuSpd  = Math.min(3 + Math.abs(pongBall.vy) * 0.1, 5.5);
-    if (pongBall.vy < 0) {
-      if (cpuCX < pongBall.x - 4) { cpuPaddle.x += cpuSpd; }
-      else if (cpuCX > pongBall.x + 4) { cpuPaddle.x -= cpuSpd; }
-    } else {
-      if (cpuCX < CW/2 - 8) { cpuPaddle.x += cpuSpd * 0.3; }
-      else if (cpuCX > CW/2 + 8) { cpuPaddle.x -= cpuSpd * 0.3; }
-    }
-    cpuPaddle.x = Math.max(0, Math.min(CW - PADDLE_W, cpuPaddle.x));
-
-    /* ball movement */
-    pongBall.x += pongBall.vx;
-    pongBall.y += pongBall.vy;
-
-    /* left/right wall */
-    if (pongBall.x - pongBall.size < 0)  { pongBall.x = pongBall.size;      pongBall.vx *= -1; }
-    if (pongBall.x + pongBall.size > CW) { pongBall.x = CW - pongBall.size; pongBall.vx *= -1; }
-
-    /* player paddle hit (bottom) */
-    if (pongBall.vy > 0 &&
-        pongBall.y + pongBall.size >= paddle.y &&
-        pongBall.y + pongBall.size <= paddle.y + paddle.h &&
-        pongBall.x >= paddle.x && pongBall.x <= paddle.x + paddle.w) {
-      pongBall.y  = paddle.y - pongBall.size;
-      var hp      = (pongBall.x - (paddle.x + PADDLE_W/2)) / (PADDLE_W/2);
-      pongBall.vx = hp * 5;
-      pongBall.vy = -Math.min(Math.abs(pongBall.vy) * 1.05, 11);
-    }
-
-    /* cpu paddle hit (top) */
-    if (pongBall.vy < 0 &&
-        pongBall.y - pongBall.size <= cpuPaddle.y + cpuPaddle.h &&
-        pongBall.y - pongBall.size >= cpuPaddle.y &&
-        pongBall.x >= cpuPaddle.x && pongBall.x <= cpuPaddle.x + cpuPaddle.w) {
-      pongBall.y  = cpuPaddle.y + cpuPaddle.h + pongBall.size;
-      var hp2     = (pongBall.x - (cpuPaddle.x + PADDLE_W/2)) / (PADDLE_W/2);
-      pongBall.vx = hp2 * 5;
-      pongBall.vy = Math.min(Math.abs(pongBall.vy) * 1.05, 11);
-    }
-
-    /* scoring */
-    if (pongBall.y - pongBall.size > CH) {
-      cpuScore++; updatePongScore();
-      if (cpuScore >= WIN_SCORE) { endPong('cpu'); return; }
-      resetPongBall();
-    }
-    if (pongBall.y + pongBall.size < 0) {
-      playerScore++; updatePongScore();
-      if (playerScore >= WIN_SCORE) { endPong('player'); return; }
-      resetPongBall();
-    }
-
-    drawPong();
-    pongRaf = requestAnimationFrame(pongLoop);
-  }
-
-  /* ════════════ HOOPS FUNCTIONS ════════════ */
-  function stopHoops() {
-    hoopsState = 'idle';
-    if (hoopsRaf) { cancelAnimationFrame(hoopsRaf); hoopsRaf = null; }
-  }
-
-  /* ── initial draw ── */
   drawPong();
-
-
-
 </script>
 </body>
 </html>
