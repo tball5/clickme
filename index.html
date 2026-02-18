@@ -123,6 +123,7 @@
       cursor: pointer;
       position: relative;
       z-index: 10;
+      touch-action: manipulation;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.4s ease;
       box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
       clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
@@ -712,7 +713,8 @@
       height: auto;
       display: block;
       border: 1px solid rgba(0,0,0,0.15);
-      cursor: none;
+      cursor: crosshair;
+      touch-action: none;
     }
 
     .pong-info {
@@ -1400,12 +1402,15 @@
     mouseY = (e.clientY - rect.top) * scaleY;
   });
 
-  /* Touch — for mobile */
+  /* Touch — for mobile, scoped only to canvas */
   pongCanvas.addEventListener('touchmove', function(e) {
-    e.preventDefault();
-    var rect   = pongCanvas.getBoundingClientRect();
-    var scaleY = CH / rect.height;
-    touchY = (e.touches[0].clientY - rect.top) * scaleY;
+    e.stopPropagation();
+    if (gameState === 'playing') {
+      e.preventDefault();
+      var rect   = pongCanvas.getBoundingClientRect();
+      var scaleY = CH / rect.height;
+      touchY = (e.touches[0].clientY - rect.top) * scaleY;
+    }
   }, { passive: false });
 
   pongCanvas.addEventListener('touchend', function() { touchY = null; });
