@@ -121,6 +121,8 @@
       font-size: clamp(1.3rem, 4vw, 2.2rem);
       letter-spacing: 0.2em;
       cursor: pointer;
+      position: relative;
+      z-index: 10;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.4s ease;
       box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
       clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
@@ -735,6 +737,21 @@
       transition: color 0.4s ease;
     }
 
+    .pong-pause-btn {
+      background: none;
+      border: 1px solid rgba(0,0,0,0.25);
+      color: #1a1a1a;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      padding: 0.2rem 0.7rem;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.2s ease;
+    }
+
+    .pong-pause-btn:hover { opacity: 1; }
+
     /* ── RIPPLE ── */
     .ripple {
       position: fixed;
@@ -766,7 +783,7 @@
   <!-- PROGRESS BAR -->
   <div class="progress-wrap">
     <div class="progress-label" id="progressLabel">
-      <span>GLOBAL CLICKS</span>
+      <span></span>
       <span id="pct">0%</span>
     </div>
     <div class="progress-bar">
@@ -788,6 +805,25 @@
   <!-- DIVIDER -->
   <div class="divider" id="divider"></div>
 
+  <!-- PONG -->
+  <div class="pong-section">
+    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+      <div class="pong-header" id="pongHeader">PONG</div>
+      <button class="pong-pause-btn" id="pongPauseBtn" style="display:none;">PAUSE</button>
+    </div>
+    <div class="pong-wrap">
+      <canvas id="pongCanvas" width="600" height="360"></canvas>
+      <div class="pong-info">
+        <span id="pongLeft">YOU: 0</span>
+        <span class="pong-start-msg" id="pongMsg">CLICK TO START · MOUSE OR ↑↓ KEYS</span>
+        <span id="pongRight">CPU: 0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIVIDER 2 -->
+  <div class="divider" id="divider2"></div>
+
   <!-- CHAT SECTION -->
   <div class="chat-section">
     <div style="display:flex; justify-content:space-between; align-items:baseline;">
@@ -803,22 +839,6 @@
       <input class="chat-name-input" id="nameInput" type="text" placeholder="YOUR NAME" maxlength="20" autocomplete="off"/>
       <input class="chat-text-input" id="msgInput"  type="text" placeholder="SAY SOMETHING..." maxlength="200" autocomplete="off"/>
       <button class="chat-send-btn" id="sendBtn">SEND</button>
-    </div>
-  </div>
-
-  <!-- DIVIDER 2 -->
-  <div class="divider" id="divider2"></div>
-
-  <!-- PONG -->
-  <div class="pong-section">
-    <div class="pong-header" id="pongHeader">PONG</div>
-    <div class="pong-wrap">
-      <canvas id="pongCanvas" width="600" height="360"></canvas>
-      <div class="pong-info">
-        <span id="pongLeft">YOU: 0</span>
-        <span class="pong-start-msg" id="pongMsg">CLICK TO START · MOVE MOUSE OR ↑↓ KEYS</span>
-        <span id="pongRight">CPU: 0</span>
-      </div>
     </div>
   </div>
 
@@ -1353,56 +1373,105 @@
   buildTrackList();
 
   /* ── PONG ── */
-  var pongCanvas  = document.getElementById('pongCanvas');
-  var ctx         = pongCanvas.getContext('2d');
-  var pongAccent  = '#1a1a1a';
-  var pongBg      = '#c8c8c8';
+  var pongCanvas   = document.getElementById('pongCanvas');
+  var ctx          = pongCanvas.getContext('2d');
+  var pongPauseBtn = document.getElementById('pongPauseBtn');
 
   var CW = 600, CH = 360;
   var PADDLE_W = 10, PADDLE_H = 70, BALL_SIZE = 8;
-  var PADDLE_SPEED = 5, CPU_SPEED = 3.5;
+  var WIN_SCORE = 7;
 
-  var gameState = 'idle'; /* idle, playing, paused */
+  var gameState  = 'idle'; /* idle, playing, paused, over */
   var playerScore = 0, cpuScore = 0;
+  var rafId = null;
 
-  var player = { x: 18, y: CH/2 - PADDLE_H/2, w: PADDLE_W, h: PADDLE_H, dy: 0 };
-  var cpu    = { x: CW - 18 - PADDLE_W, y: CH/2 - PADDLE_H/2, w: PADDLE_W, h: PADDLE_H };
+  var player = { x: 18,               y: CH/2 - PADDLE_H/2, w: PADDLE_W, h: PADDLE_H };
+  var cpu    = { x: CW-18-PADDLE_W,   y: CH/2 - PADDLE_H/2, w: PADDLE_W, h: PADDLE_H };
   var ball   = { x: CW/2, y: CH/2, vx: 4, vy: 3, size: BALL_SIZE };
 
-  var mouseY = CH / 2;
+  var mouseY   = CH / 2;
+  var touchY   = null;
   var keysDown = {};
 
+  /* Mouse */
   pongCanvas.addEventListener('mousemove', function(e) {
-    var rect = pongCanvas.getBoundingClientRect();
+    var rect  = pongCanvas.getBoundingClientRect();
     var scaleY = CH / rect.height;
     mouseY = (e.clientY - rect.top) * scaleY;
   });
 
+  /* Touch — for mobile */
+  pongCanvas.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    var rect   = pongCanvas.getBoundingClientRect();
+    var scaleY = CH / rect.height;
+    touchY = (e.touches[0].clientY - rect.top) * scaleY;
+  }, { passive: false });
+
+  pongCanvas.addEventListener('touchend', function() { touchY = null; });
+
+  /* Click to start / resume */
   pongCanvas.addEventListener('click', function() {
-    if (gameState === 'idle') {
-      gameState = 'playing';
-      document.getElementById('pongMsg').textContent = 'MOVE MOUSE OR ↑↓ KEYS';
-      resetBall();
-      requestAnimationFrame(pongLoop);
-    }
+    if (gameState === 'idle' || gameState === 'over') { startGame(); }
+    else if (gameState === 'paused')                  { resumeGame(); }
   });
 
+  /* Pause button */
+  pongPauseBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (gameState === 'playing') { pauseGame(); }
+    else if (gameState === 'paused') { resumeGame(); }
+  });
+
+  /* Keyboard */
   document.addEventListener('keydown', function(e) {
     keysDown[e.key] = true;
     if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && gameState === 'playing') {
       e.preventDefault();
     }
-    if (e.key === ' ' && gameState === 'idle') {
-      gameState = 'playing';
-      document.getElementById('pongMsg').textContent = 'MOVE MOUSE OR ↑↓ KEYS';
-      resetBall();
-      requestAnimationFrame(pongLoop);
+    if (e.key === 'p' || e.key === 'P') {
+      if (gameState === 'playing')      { pauseGame(); }
+      else if (gameState === 'paused')  { resumeGame(); }
     }
   });
+  document.addEventListener('keyup', function(e) { keysDown[e.key] = false; });
 
-  document.addEventListener('keyup', function(e) {
-    keysDown[e.key] = false;
-  });
+  function startGame() {
+    playerScore = 0; cpuScore = 0;
+    player.y = CH/2 - PADDLE_H/2;
+    cpu.y    = CH/2 - PADDLE_H/2;
+    gameState = 'playing';
+    pongPauseBtn.style.display = 'block';
+    pongPauseBtn.textContent = 'PAUSE';
+    document.getElementById('pongMsg').textContent = 'FIRST TO ' + WIN_SCORE + ' WINS · P TO PAUSE';
+    updateScoreDisplay();
+    resetBall();
+    if (rafId) { cancelAnimationFrame(rafId); }
+    rafId = requestAnimationFrame(pongLoop);
+  }
+
+  function pauseGame() {
+    gameState = 'paused';
+    pongPauseBtn.textContent = 'RESUME';
+    document.getElementById('pongMsg').textContent = 'PAUSED — CLICK CANVAS OR P TO RESUME';
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    drawFrame();
+  }
+
+  function resumeGame() {
+    gameState = 'playing';
+    pongPauseBtn.textContent = 'PAUSE';
+    document.getElementById('pongMsg').textContent = 'FIRST TO ' + WIN_SCORE + ' WINS · P TO PAUSE';
+    rafId = requestAnimationFrame(pongLoop);
+  }
+
+  function endGame(winner) {
+    gameState = 'over';
+    pongPauseBtn.style.display = 'none';
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    document.getElementById('pongMsg').textContent = (winner === 'player' ? 'YOU WIN! 🎉' : 'CPU WINS!') + ' — CLICK TO PLAY AGAIN';
+    drawFrame();
+  }
 
   function resetBall() {
     ball.x = CW / 2;
@@ -1417,116 +1486,109 @@
     document.getElementById('pongRight').textContent = 'CPU: ' + cpuScore;
   }
 
-  function pongLoop() {
-    if (gameState !== 'playing') { return; }
-
-    /* ── player paddle ── */
-    if (keysDown['ArrowUp'])   { player.y -= PADDLE_SPEED; }
-    if (keysDown['ArrowDown']) { player.y += PADDLE_SPEED; }
-
-    /* mouse control — smooth follow */
-    var targetY = mouseY - PADDLE_H / 2;
-    var diff = targetY - player.y;
-    player.y += diff * 0.18;
-    player.y = Math.max(0, Math.min(CH - PADDLE_H, player.y));
-
-    /* ── cpu paddle ── */
-    var cpuCenter = cpu.y + PADDLE_H / 2;
-    if (ball.vx > 0) {
-      if (cpuCenter < ball.y - 5) { cpu.y += CPU_SPEED; }
-      else if (cpuCenter > ball.y + 5) { cpu.y -= CPU_SPEED; }
-    } else {
-      /* drift back to center when ball coming toward player */
-      if (cpuCenter < CH/2 - 10) { cpu.y += CPU_SPEED * 0.4; }
-      else if (cpuCenter > CH/2 + 10) { cpu.y -= CPU_SPEED * 0.4; }
-    }
-    cpu.y = Math.max(0, Math.min(CH - PADDLE_H, cpu.y));
-
-    /* ── ball ── */
-    ball.x += ball.vx;
-    ball.y += ball.vy;
-
-    /* top / bottom bounce */
-    if (ball.y - ball.size < 0)  { ball.y = ball.size;  ball.vy *= -1; }
-    if (ball.y + ball.size > CH) { ball.y = CH - ball.size; ball.vy *= -1; }
-
-    /* player paddle collision */
-    if (ball.vx < 0 &&
-        ball.x - ball.size < player.x + player.w &&
-        ball.x - ball.size > player.x &&
-        ball.y > player.y && ball.y < player.y + player.h) {
-      ball.x = player.x + player.w + ball.size;
-      var hitPos = (ball.y - (player.y + player.h/2)) / (player.h/2);
-      ball.vy = hitPos * 5;
-      ball.vx = Math.abs(ball.vx) * 1.05;
-      if (ball.vx > 12) { ball.vx = 12; }
-    }
-
-    /* cpu paddle collision */
-    if (ball.vx > 0 &&
-        ball.x + ball.size > cpu.x &&
-        ball.x + ball.size < cpu.x + cpu.w &&
-        ball.y > cpu.y && ball.y < cpu.y + cpu.h) {
-      ball.x = cpu.x - ball.size;
-      var hitPos2 = (ball.y - (cpu.y + cpu.h/2)) / (cpu.h/2);
-      ball.vy = hitPos2 * 5;
-      ball.vx = -Math.abs(ball.vx) * 1.05;
-      if (Math.abs(ball.vx) > 12) { ball.vx = -12; }
-    }
-
-    /* scoring */
-    if (ball.x + ball.size < 0) {
-      cpuScore++;
-      updateScoreDisplay();
-      resetBall();
-    }
-    if (ball.x - ball.size > CW) {
-      playerScore++;
-      updateScoreDisplay();
-      resetBall();
-    }
-
-    /* ── draw ── */
-    /* background */
-    ctx.fillStyle = pongBg;
+  function drawFrame() {
+    /* background uses page bg color */
+    var pageBg = document.body.style.backgroundColor || '#c8c8c8';
+    ctx.fillStyle = pageBg;
     ctx.fillRect(0, 0, CW, CH);
 
-    /* center dashed line */
+    /* center dashed line — always dark */
     ctx.setLineDash([6, 6]);
-    ctx.strokeStyle = pongAccent;
-    ctx.globalAlpha = 0.15;
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    ctx.globalAlpha = 1;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(CW/2, 0);
     ctx.lineTo(CW/2, CH);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.globalAlpha = 1;
 
-    /* paddles */
-    ctx.fillStyle = pongAccent;
+    /* paddles and ball always black */
+    ctx.fillStyle = '#1a1a1a';
     ctx.fillRect(player.x, player.y, player.w, player.h);
     ctx.fillRect(cpu.x, cpu.y, cpu.w, cpu.h);
-
-    /* ball */
     ctx.beginPath();
     ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
     ctx.fill();
-
-    requestAnimationFrame(pongLoop);
   }
 
-  /* initial draw — idle screen */
-  (function drawIdle() {
-    ctx.fillStyle = pongBg;
-    ctx.fillRect(0, 0, CW, CH);
-    ctx.fillStyle = pongAccent;
-    ctx.fillRect(player.x, player.y, player.w, player.h);
-    ctx.fillRect(cpu.x, cpu.y, cpu.w, cpu.h);
-    ctx.beginPath();
-    ctx.arc(CW/2, CH/2, BALL_SIZE, 0, Math.PI * 2);
-    ctx.fill();
-  })();
+  function pongLoop() {
+    if (gameState !== 'playing') { return; }
+
+    /* player paddle — keyboard */
+    if (keysDown['ArrowUp'])   { player.y -= 5; }
+    if (keysDown['ArrowDown']) { player.y += 5; }
+
+    /* player paddle — mouse or touch */
+    var targetY = ((touchY !== null ? touchY : mouseY)) - PADDLE_H / 2;
+    var diff = targetY - player.y;
+    player.y += diff * 0.18;
+    player.y = Math.max(0, Math.min(CH - PADDLE_H, player.y));
+
+    /* CPU paddle AI */
+    var cpuCenter = cpu.y + PADDLE_H / 2;
+    var cpuSpeed  = Math.min(3.5 + Math.abs(ball.vx) * 0.15, 6);
+    if (ball.vx > 0) {
+      if (cpuCenter < ball.y - 5) { cpu.y += cpuSpeed; }
+      else if (cpuCenter > ball.y + 5) { cpu.y -= cpuSpeed; }
+    } else {
+      if (cpuCenter < CH/2 - 10) { cpu.y += cpuSpeed * 0.3; }
+      else if (cpuCenter > CH/2 + 10) { cpu.y -= cpuSpeed * 0.3; }
+    }
+    cpu.y = Math.max(0, Math.min(CH - PADDLE_H, cpu.y));
+
+    /* ball movement */
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+
+    /* top / bottom wall bounce */
+    if (ball.y - ball.size < 0)  { ball.y = ball.size;       ball.vy *= -1; }
+    if (ball.y + ball.size > CH) { ball.y = CH - ball.size;  ball.vy *= -1; }
+
+    /* player paddle hit */
+    if (ball.vx < 0 &&
+        ball.x - ball.size <= player.x + player.w &&
+        ball.x - ball.size >= player.x &&
+        ball.y >= player.y && ball.y <= player.y + player.h) {
+      ball.x  = player.x + player.w + ball.size;
+      var hp  = (ball.y - (player.y + player.h/2)) / (player.h/2);
+      ball.vy = hp * 5;
+      ball.vx = Math.min(Math.abs(ball.vx) * 1.05, 12);
+    }
+
+    /* cpu paddle hit */
+    if (ball.vx > 0 &&
+        ball.x + ball.size >= cpu.x &&
+        ball.x + ball.size <= cpu.x + cpu.w &&
+        ball.y >= cpu.y && ball.y <= cpu.y + cpu.h) {
+      ball.x   = cpu.x - ball.size;
+      var hp2  = (ball.y - (cpu.y + cpu.h/2)) / (cpu.h/2);
+      ball.vy  = hp2 * 5;
+      ball.vx  = -Math.min(Math.abs(ball.vx) * 1.05, 12);
+    }
+
+    /* scoring */
+    if (ball.x + ball.size < 0) {
+      cpuScore++;
+      updateScoreDisplay();
+      if (cpuScore >= WIN_SCORE) { endGame('cpu'); return; }
+      resetBall();
+    }
+    if (ball.x - ball.size > CW) {
+      playerScore++;
+      updateScoreDisplay();
+      if (playerScore >= WIN_SCORE) { endGame('player'); return; }
+      resetBall();
+    }
+
+    drawFrame();
+    rafId = requestAnimationFrame(pongLoop);
+  }
+
+  /* initial idle draw */
+  drawFrame();
+
+
 
 </script>
 </body>
