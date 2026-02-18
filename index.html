@@ -958,40 +958,83 @@
     var accent = brightness < 128 ? '#f0f0f0' : '#1a1a1a';
     var btnBg  = brightness < 128 ? '#e0e0e0' : '#2e2e2e';
     var btnTxt = brightness < 128 ? '#1a1a1a' : '#f0f0f0';
+    var inputBg  = brightness < 128 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+    var inputBdr = brightness < 128 ? 'rgba(255,255,255,0.2)'  : 'rgba(0,0,0,0.15)';
+    var divBg    = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
     currentAccent = accent;
 
-    titleEl.style.color     = accent;
-    counterEl.style.color   = accent;
-    shadeEl.style.color     = accent;
-    fillEl.style.background = accent;
-    chatHeader.style.color  = accent;
-    chatCount.style.color   = accent;
-    dividerEl.style.background = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
-
-    var inputBg    = brightness < 128 ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
-    var inputBdr   = brightness < 128 ? 'rgba(255,255,255,0.2)'  : 'rgba(0,0,0,0.15)';
-    nameInput.style.background   = inputBg;
-    nameInput.style.borderColor  = inputBdr;
-    nameInput.style.color        = accent;
-    msgInput.style.background    = inputBg;
-    msgInput.style.borderColor   = inputBdr;
-    msgInput.style.color         = accent;
-    chatMessages.style.background   = brightness < 128 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
-    chatMessages.style.borderColor  = inputBdr;
-
-    sendBtn.style.background = btnBg;
-    sendBtn.style.color      = btnTxt;
-
+    /* click section */
+    titleEl.style.color        = accent;
+    counterEl.style.color      = accent;
+    shadeEl.style.color        = accent;
+    fillEl.style.background    = accent;
+    btn.style.background       = btnBg;
+    btn.style.color            = btnTxt;
+    dividerEl.style.background = divBg;
     var labelSpans = progressLbl.querySelectorAll('span');
-    for (var s = 0; s < labelSpans.length; s++) {
-      labelSpans[s].style.color = accent;
-    }
-
-    btn.style.background = btnBg;
-    btn.style.color      = btnTxt;
-
+    for (var s = 0; s < labelSpans.length; s++) { labelSpans[s].style.color = accent; }
     shadeEl.classList.remove('connecting');
     shadeEl.textContent = 'SHADE ' + String(idx + 1).padStart(2, '0') + ' OF 50';
+
+    /* chat section */
+    chatHeader.style.color           = accent;
+    chatCount.style.color            = accent;
+    nameInput.style.background       = inputBg;
+    nameInput.style.borderColor      = inputBdr;
+    nameInput.style.color            = accent;
+    msgInput.style.background        = inputBg;
+    msgInput.style.borderColor       = inputBdr;
+    msgInput.style.color             = accent;
+    chatMessages.style.background    = brightness < 128 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+    chatMessages.style.borderColor   = inputBdr;
+    sendBtn.style.background         = btnBg;
+    sendBtn.style.color              = btnTxt;
+
+    /* dividers */
+    var d2 = document.getElementById('divider2');
+    var d3 = document.getElementById('divider3');
+    if (d2) { d2.style.background = divBg; }
+    if (d3) { d3.style.background = divBg; }
+
+    /* pong section */
+    var ph = document.getElementById('pongHeader');
+    var pl = document.getElementById('pongLeft');
+    var pr = document.getElementById('pongRight');
+    var pm = document.getElementById('pongMsg');
+    var pb = document.getElementById('pongPauseBtn');
+    if (ph) { ph.style.color = accent; }
+    if (pl) { pl.style.color = accent; }
+    if (pr) { pr.style.color = accent; }
+    if (pm) { pm.style.color = accent; }
+    if (pb) { pb.style.color = accent; pb.style.borderColor = inputBdr; }
+    /* update pong canvas bg color — paddles/ball stay black */
+    pongPageBg = bg;
+
+    /* music player section */
+    var playerHeader  = document.getElementById('playerHeader');
+    var playerBox     = document.getElementById('playerBox');
+    var playerArt     = document.getElementById('playerArt');
+    var playerTName   = document.getElementById('playerTrackName');
+    var playerTNum    = document.getElementById('playerTrackNum');
+    var timeEl        = document.getElementById('timeElapsed');
+    var timeDur       = document.getElementById('timeDuration');
+    var scrub         = document.getElementById('scrubber');
+    var volSlider     = document.getElementById('volumeSlider');
+    if (playerHeader) { playerHeader.style.color = accent; }
+    if (playerBox)    { playerBox.style.background = inputBg; playerBox.style.borderColor = inputBdr; }
+    if (playerArt)    { playerArt.style.background = brightness < 128 ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.15)'; }
+    if (playerTName)  { playerTName.style.color = accent; }
+    if (playerTNum)   { playerTNum.style.color = accent; }
+    if (timeEl)       { timeEl.style.color = accent; }
+    if (timeDur)      { timeDur.style.color = accent; }
+    if (scrub)        { scrub.style.background = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'; }
+    if (volSlider)    { volSlider.style.background = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'; }
+    var ctrlBtns = document.querySelectorAll('.ctrl-btn');
+    for (var c = 0; c < ctrlBtns.length; c++) { ctrlBtns[c].style.color = accent; }
+    var trackLabels = document.querySelectorAll('.track-name-label, .track-num, .vol-icon');
+    for (var t = 0; t < trackLabels.length; t++) { trackLabels[t].style.color = accent; }
+    var bars = document.querySelectorAll('.bar');
+    for (var b = 0; b < bars.length; b++) { bars[b].style.background = accent; }
   }
 
   /* ── CLICK LISTENER ── */
@@ -1318,66 +1361,13 @@
     audio.volume = volumeSlider.value;
   });
 
-  /* Hook into updateUI to style player elements */
-  var _origUpdateUI = updateUI;
-  updateUI = function(count) {
-    _origUpdateUI(count);
-
-    var idx2       = count % 50;
-    var brightness = shades[idx2];
-    var accent     = brightness < 128 ? '#f0f0f0' : '#1a1a1a';
-    var inputBg    = brightness < 128 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
-    var inputBdr   = brightness < 128 ? 'rgba(255,255,255,0.2)'  : 'rgba(0,0,0,0.12)';
-
-    playerHeader.style.color       = accent;
-    playerBox.style.background     = inputBg;
-    playerBox.style.borderColor    = inputBdr;
-    playerArt.style.background     = brightness < 128 ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.15)';
-    playerTrackName.style.color    = accent;
-    playerTrackNum.style.color     = accent;
-    timeElapsed.style.color        = accent;
-    timeDuration.style.color       = accent;
-    divider2.style.background      = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
-
-    scrubber.style.background      = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
-    volumeSlider.style.background  = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)';
-
-    var ctrlBtns = document.querySelectorAll('.ctrl-btn');
-    for (var c = 0; c < ctrlBtns.length; c++) {
-      ctrlBtns[c].style.color = accent;
-    }
-
-    var trackItems = document.querySelectorAll('.track-name-label, .track-num, .vol-icon');
-    for (var t = 0; t < trackItems.length; t++) {
-      trackItems[t].style.color = accent;
-    }
-
-    var bars = document.querySelectorAll('.bar');
-    for (var b = 0; b < bars.length; b++) {
-      bars[b].style.background = accent;
-    }
-
-    /* pong color update */
-    var d3el = document.getElementById('divider3');
-    if (d3el) { d3el.style.background = brightness < 128 ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'; }
-    var ph = document.getElementById('pongHeader');
-    if (ph) { ph.style.color = accent; }
-    var pl = document.getElementById('pongLeft');
-    if (pl) { pl.style.color = accent; }
-    var pr = document.getElementById('pongRight');
-    if (pr) { pr.style.color = accent; }
-    var pm = document.getElementById('pongMsg');
-    if (pm) { pm.style.color = accent; }
-    pongAccent = accent;
-    pongBg     = bg;
-  };
-
   buildTrackList();
 
   /* ── PONG ── */
   var pongCanvas   = document.getElementById('pongCanvas');
   var ctx          = pongCanvas.getContext('2d');
   var pongPauseBtn = document.getElementById('pongPauseBtn');
+  var pongPageBg   = '#c8c8c8';
 
   var CW = 600, CH = 360;
   var PADDLE_W = 10, PADDLE_H = 70, BALL_SIZE = 8;
@@ -1492,9 +1482,7 @@
   }
 
   function drawFrame() {
-    /* background uses page bg color */
-    var pageBg = document.body.style.backgroundColor || '#c8c8c8';
-    ctx.fillStyle = pageBg;
+    ctx.fillStyle = pongPageBg;
     ctx.fillRect(0, 0, CW, CH);
 
     /* center dashed line — always dark */
