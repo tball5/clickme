@@ -1753,8 +1753,8 @@
   btnPong.addEventListener('click', function() {
     if (activeGame === 'pong') { return; }
     activeGame = 'pong';
-    btnPong.classList.replace('inactive','active');
-    btnHoops.classList.replace('active','inactive');
+    btnPong.className  = 'game-toggle-btn active';
+    btnHoops.className = 'game-toggle-btn inactive';
     stopHoops();
     pongState = 'idle';
     pongPauseBtn.style.display = 'none';
@@ -1769,13 +1769,13 @@
   btnHoops.addEventListener('click', function() {
     if (activeGame === 'hoops') { return; }
     activeGame = 'hoops';
-    btnHoops.classList.replace('inactive','active');
-    btnPong.classList.replace('active','inactive');
+    btnHoops.className = 'game-toggle-btn active';
+    btnPong.className  = 'game-toggle-btn inactive';
     stopPong();
     pongPauseBtn.style.display = 'none';
     hoopsState = 'idle';
     shots = 0; makes = 0;
-    hBall.x = CW/2; hBall.y = CH - 80; hBall.vx = 0; hBall.vy = 0; hBall.flying = false;
+    hBall.x = CW/2; hBall.y = CH - 70; hBall.vx = 0; hBall.vy = 0; hBall.flying = false;
     ballResting = true;
     pongMsgEl.textContent = 'DRAG & FLICK THE BALL UP INTO THE HOOP';
     gameLeftEl.textContent  = '';
