@@ -226,22 +226,10 @@
 
     /* GAMES */
     .pong-section { width:100%; display:flex; flex-direction:column; gap:0.75rem; }
-    .game-toggle { display:flex; align-items:center; gap:0.5rem; }
-    .game-toggle-sep {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem; letter-spacing: 0.2em;
-      color: #1a1a1a; opacity: 0.3; transition: color 0.4s ease;
+    .pong-header {
+      font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:0.2em;
+      color:#1a1a1a; transition:color 0.4s ease;
     }
-    .game-toggle-btn {
-      background: none; border: none;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.4rem; letter-spacing: 0.2em;
-      cursor: pointer; padding: 0;
-      transition: color 0.4s ease, opacity 0.2s ease;
-    }
-    .game-toggle-btn.active  { color:#1a1a1a; opacity:1; }
-    .game-toggle-btn.inactive{ color:#1a1a1a; opacity:0.3; }
-    .game-toggle-btn:hover   { opacity:0.7 !important; }
     .pong-wrap { width:100%; display:flex; flex-direction:column; align-items:center; gap:0.5rem; }
     #gameCanvas {
       width:100%; max-width:600px; height:auto; display:block;
@@ -426,11 +414,7 @@
   <!-- GAMES -->
   <div class="pong-section">
     <div style="display:flex;justify-content:space-between;align-items:baseline;">
-      <div class="game-toggle">
-        <button class="game-toggle-btn active" id="btnPong">PONG</button>
-        <span class="game-toggle-sep">/</span>
-        <button class="game-toggle-btn inactive" id="btnHoops">HOOPS</button>
-      </div>
+      <div class="pong-header" id="pongHeader">PONG</div>
       <button class="pong-pause-btn" id="pongPauseBtn" style="display:none;">PAUSE</button>
     </div>
     <div class="pong-wrap">
@@ -571,17 +555,8 @@
     var d2=document.getElementById('divider2'); if(d2) d2.style.background=divBg;
     var d3=document.getElementById('divider3'); if(d3) d3.style.background=divBg;
 
-    var bp=document.getElementById('btnPong'),bh=document.getElementById('btnHoops');
-    var sep=document.querySelector('.game-toggle-sep');
-    var pm=document.getElementById('pongMsg'),pb=document.getElementById('pongPauseBtn');
-    var gl=document.getElementById('gameLeft'),gr=document.getElementById('gameRight');
-    if(bp)  bp.style.color=accent;
-    if(bh)  bh.style.color=accent;
-    if(sep) sep.style.color=accent;
-    if(pm)  pm.style.color=accent;
-    if(pb)  { pb.style.color=accent; pb.style.borderColor=inputBdr; }
-    if(gl)  gl.style.color=accent;
-    if(gr)  gr.style.color=accent;
+    var ph=document.getElementById('pongHeader');
+    if(ph) ph.style.color=accent;
 
     var ph=document.getElementById('playerHeader'),pbox=document.getElementById('playerBox');
     var sb=document.getElementById('shuffleBtn'); if(sb) sb.style.color=accent;    var pa=document.getElementById('playerArt'),ptn=document.getElementById('playerTrackName');
@@ -785,21 +760,16 @@
 
   buildTrackList();
 
-  /* ════════════════════════════════
-     GAMES — PONG + HOOPS
-     ════════════════════════════════ */
+  /* ════════════
+     PONG GAME
+     ════════════ */
   var gameCanvas   = document.getElementById('gameCanvas');
   var ctx          = gameCanvas.getContext('2d');
   var pongPauseBtn = document.getElementById('pongPauseBtn');
   var pongMsgEl    = document.getElementById('pongMsg');
   var gameLeftEl   = document.getElementById('gameLeft');
   var gameRightEl  = document.getElementById('gameRight');
-  var btnPong      = document.getElementById('btnPong');
-  var btnHoops     = document.getElementById('btnHoops');
-  var activeGame   = 'pong';
   var CW=400, CH=500;
-
-  /* PONG */
   var PADDLE_W=70, PADDLE_H=12, BALL_SIZE=8, WIN_SCORE=7;
   var pongState='idle', playerScore=0, cpuScore=0, pongRaf=null;
   var paddle    = {x:CW/2-PADDLE_W/2, y:CH-30, w:PADDLE_W, h:PADDLE_H};
@@ -807,89 +777,21 @@
   var pongBall  = {x:CW/2, y:CH/2, vx:3, vy:4, size:BALL_SIZE};
   var mouseX=CW/2, touchX=null, keysDown={};
 
-  /* HOOPS */
-  var hoopsState='idle', hoopsRaf=null;
-  var shots=0, makes=0, swishFrames=0, missFrames=0;
-  var hBall = {x:CW/2, y:CH-70, r:16, vx:0, vy:0, flying:false};
-  var hoop  = {x:CW/2, y:110, w:72, rimR:7};
-  var dragStart=null;
-
-  /* TOGGLE */
-  btnPong.onclick = function() {
-    if(activeGame==='pong') return;
-    activeGame='pong';
-    btnPong.className='game-toggle-btn active';
-    btnHoops.className='game-toggle-btn inactive';
-    if(hoopsRaf){cancelAnimationFrame(hoopsRaf);hoopsRaf=null;}
-    pongPauseBtn.style.display='none';
-    pongState='idle'; playerScore=0; cpuScore=0;
-    resetPongBall();
-    pongMsgEl.textContent='CLICK TO START';
-    gameLeftEl.textContent='YOU: 0'; gameRightEl.textContent='CPU: 0';
-    drawPong();
-  };
-
-  btnHoops.onclick = function() {
-    if(activeGame==='hoops') return;
-    activeGame='hoops';
-    btnHoops.className='game-toggle-btn active';
-    btnPong.className='game-toggle-btn inactive';
-    if(pongRaf){cancelAnimationFrame(pongRaf);pongRaf=null;}
-    pongPauseBtn.style.display='none';
-    hoopsState='idle'; shots=0; makes=0; swishFrames=0; missFrames=0;
-    hBall.x=CW/2; hBall.y=CH-70; hBall.vx=0; hBall.vy=0; hBall.flying=false;
-    dragStart=null;
-    pongMsgEl.textContent='DRAG BALL & RELEASE TO SHOOT';
-    gameLeftEl.textContent=''; gameRightEl.textContent='';
-    drawHoops();
-  };
-
-  /* INPUT */
   gameCanvas.addEventListener('mousemove',function(e){
     var r=gameCanvas.getBoundingClientRect();
     mouseX=(e.clientX-r.left)*(CW/r.width);
-    if(activeGame==='hoops'&&dragStart&&!hBall.flying){
-      dragStart.curX=(e.clientX-r.left)*(CW/r.width);
-      dragStart.curY=(e.clientY-r.top)*(CH/r.height);
-      drawHoops();
-    }
   });
   gameCanvas.addEventListener('touchmove',function(e){
     e.stopPropagation();
     var r=gameCanvas.getBoundingClientRect();
     touchX=(e.touches[0].clientX-r.left)*(CW/r.width);
-    if(activeGame==='pong'&&pongState==='playing') e.preventDefault();
-    if(activeGame==='hoops'&&dragStart&&!hBall.flying){
-      e.preventDefault();
-      dragStart.curX=(e.touches[0].clientX-r.left)*(CW/r.width);
-      dragStart.curY=(e.touches[0].clientY-r.top)*(CH/r.height);
-      drawHoops();
-    }
+    if(pongState==='playing') e.preventDefault();
   },{passive:false});
-  gameCanvas.addEventListener('touchend',function(){touchX=null;if(activeGame==='hoops')hoopsFlick();});
+  gameCanvas.addEventListener('touchend',function(){ touchX=null; });
   gameCanvas.addEventListener('click',function(){
-    if(activeGame==='pong'){
-      if(pongState==='idle'||pongState==='over') startPong();
-      else if(pongState==='paused') resumePong();
-    }
+    if(pongState==='idle'||pongState==='over') startPong();
+    else if(pongState==='paused') resumePong();
   });
-  gameCanvas.addEventListener('mousedown',function(e){
-    if(activeGame!=='hoops'||hBall.flying) return;
-    var r=gameCanvas.getBoundingClientRect();
-    dragStart={
-      startX:(e.clientX-r.left)*(CW/r.width), startY:(e.clientY-r.top)*(CH/r.height),
-      curX:(e.clientX-r.left)*(CW/r.width),   curY:(e.clientY-r.top)*(CH/r.height)
-    };
-  });
-  gameCanvas.addEventListener('mouseup',function(){if(activeGame==='hoops')hoopsFlick();});
-  gameCanvas.addEventListener('touchstart',function(e){
-    if(activeGame!=='hoops'||hBall.flying) return;
-    var r=gameCanvas.getBoundingClientRect();
-    dragStart={
-      startX:(e.touches[0].clientX-r.left)*(CW/r.width), startY:(e.touches[0].clientY-r.top)*(CH/r.height),
-      curX:(e.touches[0].clientX-r.left)*(CW/r.width),   curY:(e.touches[0].clientY-r.top)*(CH/r.height)
-    };
-  },{passive:true});
   pongPauseBtn.addEventListener('click',function(e){
     e.stopPropagation();
     if(pongState==='playing') pausePong();
@@ -897,12 +799,11 @@
   });
   document.addEventListener('keydown',function(e){
     keysDown[e.key]=true;
-    if(activeGame==='pong'&&(e.key==='ArrowLeft'||e.key==='ArrowRight')&&pongState==='playing') e.preventDefault();
-    if(activeGame==='pong'&&(e.key==='p'||e.key==='P')){if(pongState==='playing')pausePong();else if(pongState==='paused')resumePong();}
+    if((e.key==='ArrowLeft'||e.key==='ArrowRight')&&pongState==='playing') e.preventDefault();
+    if(e.key==='p'||e.key==='P'){if(pongState==='playing')pausePong();else if(pongState==='paused')resumePong();}
   });
-  document.addEventListener('keyup',function(e){keysDown[e.key]=false;});
+  document.addEventListener('keyup',function(e){ keysDown[e.key]=false; });
 
-  /* PONG FUNCTIONS */
   function drawPong(){
     ctx.fillStyle=pongPageBg; ctx.fillRect(0,0,CW,CH);
     ctx.save(); ctx.setLineDash([6,6]); ctx.strokeStyle='rgba(0,0,0,0.12)'; ctx.lineWidth=1;
@@ -970,101 +871,6 @@
     if(pongBall.y+pongBall.size<0){playerScore++;gameLeftEl.textContent='YOU: '+playerScore;gameRightEl.textContent='CPU: '+cpuScore;if(playerScore>=WIN_SCORE){endPong('player');return;}resetPongBall();}
     drawPong();
     pongRaf=requestAnimationFrame(pongLoop);
-  }
-
-  /* HOOPS FUNCTIONS */
-  function drawHoops(){
-    ctx.fillStyle=pongPageBg; ctx.fillRect(0,0,CW,CH);
-    var hx=hoop.x, hy=hoop.y, lx=hx-hoop.w/2, rx=hx+hoop.w/2;
-    /* backboard */
-    ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(hx-60,hy-48,120,60);
-    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=3; ctx.globalAlpha=0.6;
-    ctx.strokeRect(hx-60,hy-48,120,60);
-    ctx.globalAlpha=0.35; ctx.lineWidth=1.5; ctx.strokeRect(hx-20,hy-14,40,22);
-    ctx.globalAlpha=1;
-    /* rim */
-    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=hoop.rimR*2; ctx.lineCap='round'; ctx.globalAlpha=0.85;
-    ctx.beginPath(); ctx.moveTo(lx,hy); ctx.lineTo(rx,hy); ctx.stroke();
-    ctx.globalAlpha=1; ctx.lineCap='butt';
-    /* net */
-    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1; ctx.globalAlpha=0.25;
-    var ntop=hy+hoop.rimR, nbot=hy+48;
-    for(var n=0;n<=5;n++){
-      var t=n/5, nx=lx+hoop.rimR+(rx-lx-hoop.rimR*2)*t, nbx=hx+(nx-hx)*0.45;
-      ctx.beginPath(); ctx.moveTo(nx,ntop); ctx.lineTo(nbx,nbot); ctx.stroke();
-    }
-    for(var m=1;m<=3;m++){
-      var my=ntop+(nbot-ntop)*(m/4);
-      ctx.beginPath(); ctx.moveTo(lx+hoop.rimR,my); ctx.lineTo(rx-hoop.rimR,my); ctx.stroke();
-    }
-    ctx.globalAlpha=1;
-    /* swish / miss */
-    ctx.textAlign='center';
-    if(swishFrames>0){ctx.fillStyle='#1a1a1a';ctx.globalAlpha=Math.min(swishFrames/20,1)*0.75;ctx.font='bold 30px sans-serif';ctx.fillText('SWISH!',CW/2,CH/2);ctx.globalAlpha=1;}
-    if(missFrames>0){ctx.fillStyle='#1a1a1a';ctx.globalAlpha=Math.min(missFrames/20,1)*0.35;ctx.font='bold 22px sans-serif';ctx.fillText('BRICK',CW/2,CH/2);ctx.globalAlpha=1;}
-    /* drag guide */
-    if(dragStart&&!hBall.flying){
-      var ddx=dragStart.curX-dragStart.startX, ddy=dragStart.curY-dragStart.startY;
-      if(Math.abs(ddx)>3||Math.abs(ddy)>3){
-        ctx.strokeStyle='#1a1a1a'; ctx.globalAlpha=0.2; ctx.lineWidth=2; ctx.setLineDash([5,5]);
-        ctx.beginPath(); ctx.moveTo(hBall.x,hBall.y); ctx.lineTo(hBall.x-ddx*2,hBall.y-ddy*2); ctx.stroke();
-        ctx.setLineDash([]); ctx.globalAlpha=1;
-      }
-    }
-    /* ball */
-    var bx=hBall.x, by=hBall.y, br=hBall.r;
-    var gr=ctx.createRadialGradient(bx-br*0.3,by-br*0.3,br*0.05,bx,by,br);
-    gr.addColorStop(0,'#ff8c00'); gr.addColorStop(0.6,'#e05500'); gr.addColorStop(1,'#9e3200');
-    ctx.fillStyle=gr; ctx.beginPath(); ctx.arc(bx,by,br,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.5; ctx.globalAlpha=0.7;
-    ctx.beginPath();ctx.moveTo(bx,by-br);ctx.bezierCurveTo(bx+br*0.5,by-br*0.3,bx+br*0.5,by+br*0.3,bx,by+br);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(bx,by-br);ctx.bezierCurveTo(bx-br*0.5,by-br*0.3,bx-br*0.5,by+br*0.3,bx,by+br);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(bx-br,by);ctx.bezierCurveTo(bx-br*0.3,by-br*0.45,bx+br*0.3,by-br*0.45,bx+br,by);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(bx-br,by);ctx.bezierCurveTo(bx-br*0.3,by+br*0.45,bx+br*0.3,by+br*0.45,bx+br,by);ctx.stroke();
-    ctx.globalAlpha=1;
-    ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.beginPath(); ctx.arc(bx-br*0.28,by-br*0.28,br*0.25,0,Math.PI*2); ctx.fill();
-    if(!hBall.flying&&shots===0){ctx.fillStyle='#1a1a1a';ctx.globalAlpha=0.22;ctx.font='11px monospace';ctx.fillText('DRAG BALL & RELEASE TO SHOOT',CW/2,CH-14);ctx.globalAlpha=1;}
-    ctx.textAlign='left';
-  }
-  function hoopsFlick(){
-    if(!dragStart||hBall.flying){dragStart=null;return;}
-    var dx=dragStart.curX-dragStart.startX, dy=dragStart.curY-dragStart.startY;
-    if(Math.abs(dx)<5&&Math.abs(dy)<5){dragStart=null;return;}
-    var power=Math.min(Math.sqrt(dx*dx+dy*dy),200), angle=Math.atan2(dy,dx);
-    hBall.vx=-Math.cos(angle)*power*0.12;
-    hBall.vy=-Math.sin(angle)*power*0.12;
-    if(hBall.vy>-5) hBall.vy=-5;
-    hBall.flying=true; shots++; dragStart=null;
-    var p=Math.round((makes/shots)*100);
-    gameLeftEl.textContent=makes+' / '+shots; gameRightEl.textContent=p+'%';
-    if(hoopsRaf) cancelAnimationFrame(hoopsRaf);
-    hoopsRaf=requestAnimationFrame(hoopsLoop);
-  }
-  function hoopsLoop(){
-    if(!hBall.flying) return;
-    hBall.vy+=0.28; hBall.x+=hBall.vx; hBall.y+=hBall.vy;
-    if(hBall.x-hBall.r<0){hBall.x=hBall.r;hBall.vx*=-0.6;}
-    if(hBall.x+hBall.r>CW){hBall.x=CW-hBall.r;hBall.vx*=-0.6;}
-    var lx=hoop.x-hoop.w/2, rx=hoop.x+hoop.w/2;
-    var dL=Math.sqrt(Math.pow(hBall.x-lx,2)+Math.pow(hBall.y-hoop.y,2));
-    if(dL<hBall.r+hoop.rimR){var aL=Math.atan2(hBall.y-hoop.y,hBall.x-lx);hBall.x=lx+Math.cos(aL)*(hBall.r+hoop.rimR+1);hBall.y=hoop.y+Math.sin(aL)*(hBall.r+hoop.rimR+1);var spL=Math.sqrt(hBall.vx*hBall.vx+hBall.vy*hBall.vy)*0.5;hBall.vx=Math.cos(aL)*spL;hBall.vy=Math.sin(aL)*spL;}
-    var dR=Math.sqrt(Math.pow(hBall.x-rx,2)+Math.pow(hBall.y-hoop.y,2));
-    if(dR<hBall.r+hoop.rimR){var aR=Math.atan2(hBall.y-hoop.y,hBall.x-rx);hBall.x=rx+Math.cos(aR)*(hBall.r+hoop.rimR+1);hBall.y=hoop.y+Math.sin(aR)*(hBall.r+hoop.rimR+1);var spR=Math.sqrt(hBall.vx*hBall.vx+hBall.vy*hBall.vy)*0.5;hBall.vx=Math.cos(aR)*spR;hBall.vy=Math.sin(aR)*spR;}
-    if(hBall.vy>0&&hBall.y>=hoop.y&&hBall.y<=hoop.y+22&&hBall.x>lx+hoop.rimR+hBall.r*0.5&&hBall.x<rx-hoop.rimR-hBall.r*0.5){
-      makes++; swishFrames=35;
-      var p2=Math.round((makes/shots)*100);
-      gameLeftEl.textContent=makes+' / '+shots; gameRightEl.textContent=p2+'%';
-    }
-    if(swishFrames>0) swishFrames--;
-    if(missFrames>0)  missFrames--;
-    if(hBall.y+hBall.r>CH+40||hBall.y+hBall.r<-80){
-      if(swishFrames===0) missFrames=28;
-      hBall.x=CW/2; hBall.y=CH-70; hBall.vx=0; hBall.vy=0; hBall.flying=false; hoopsState='idle';
-      (function fade(){if(swishFrames>0)swishFrames--;if(missFrames>0)missFrames--;drawHoops();if(swishFrames>0||missFrames>0)requestAnimationFrame(fade);})();
-      return;
-    }
-    drawHoops();
-    hoopsRaf=requestAnimationFrame(hoopsLoop);
   }
 
   drawPong();
