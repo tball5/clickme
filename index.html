@@ -692,6 +692,7 @@
   function loadTrack(idx, play) {
     currentTrack = idx;
     audio.src = tracks[idx].file;
+    audio.load(); /* required on iOS to reset before play */
     playerTrackName.textContent = tracks[idx].name;
     playerTrackNum.textContent  = (idx+1)+' / '+tracks.length;
     scrubber.value = 0; timeElapsed.textContent='0:00'; timeDuration.textContent='0:00';
@@ -700,8 +701,22 @@
       item.classList.toggle('active', i===idx);
       item.classList.remove('paused');
     });
-    if(play){ audio.play(); isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;'; }
-    else { isPlaying=false; playPauseBtn.innerHTML='&#9654;'; }
+    if(play){
+      var p = audio.play();
+      if(p !== undefined){
+        p.then(function(){
+          isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;';
+        }).catch(function(err){
+          /* iOS blocked autoplay — mark as not playing */
+          isPlaying=false; playPauseBtn.innerHTML='&#9654;';
+          console.warn('Playback blocked:', err);
+        });
+      } else {
+        isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;';
+      }
+    } else {
+      isPlaying=false; playPauseBtn.innerHTML='&#9654;';
+    }
   }
 
   function buildTrackList() {
@@ -723,9 +738,20 @@
       audio.pause(); isPlaying=false; playPauseBtn.innerHTML='&#9654;';
       var ai=document.getElementById('track-'+currentTrack);if(ai)ai.classList.add('paused');
     } else {
-      if(!audio.src||audio.src===window.location.href) loadTrack(0,true);
-      else { audio.play(); isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;';
-        var ai2=document.getElementById('track-'+currentTrack);if(ai2)ai2.classList.remove('paused'); }
+      if(!audio.src||audio.src===window.location.href) {
+        loadTrack(0,true);
+      } else {
+        var p2 = audio.play();
+        if(p2 !== undefined){
+          p2.then(function(){
+            isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;';
+            var ai2=document.getElementById('track-'+currentTrack);if(ai2)ai2.classList.remove('paused');
+          }).catch(function(err){ console.warn('Playback blocked:', err); });
+        } else {
+          isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;';
+          var ai3=document.getElementById('track-'+currentTrack);if(ai3)ai3.classList.remove('paused');
+        }
+      }
     }
   });
   audio.addEventListener('timeupdate',function(){
@@ -742,13 +768,32 @@
   prevBtn.addEventListener('click',function(){ loadTrack(currentTrack<=0?tracks.length-1:currentTrack-1,isPlaying); });
   nextBtn.addEventListener('click',function(){ loadTrack(currentTrack>=tracks.length-1?0:currentTrack+1,isPlaying); });
   audio.addEventListener('ended',function(){
+    var next;
     if(shuffleOn){
-      var next;
       do { next=Math.floor(Math.random()*tracks.length); } while(tracks.length>1&&next===currentTrack);
-      loadTrack(next,true);
     } else {
-      loadTrack(currentTrack<tracks.length-1?currentTrack+1:0, currentTrack<tracks.length-1);
+      next = currentTrack<tracks.length-1 ? currentTrack+1 : -1;
     }
+    if(next === -1){ isPlaying=false; playPauseBtn.innerHTML='&#9654;'; return; }
+    /* On iOS, set src + load first, then play on canplay to avoid block */
+    currentTrack = next;
+    audio.src = tracks[next].file;
+    audio.load();
+    playerTrackName.textContent = tracks[next].name;
+    playerTrackNum.textContent  = (next+1)+' / '+tracks.length;
+    scrubber.value=0; timeElapsed.textContent='0:00';
+    var items=document.querySelectorAll('.track-item');
+    items.forEach(function(item,i){ item.classList.toggle('active',i===next); item.classList.remove('paused'); });
+    audio.addEventListener('canplay', function onCanPlay(){
+      audio.removeEventListener('canplay', onCanPlay);
+      var p3=audio.play();
+      if(p3!==undefined){
+        p3.then(function(){ isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;'; })
+          .catch(function(err){ isPlaying=false; playPauseBtn.innerHTML='&#9654;'; console.warn('Autoplay blocked after ended:', err); });
+      } else {
+        isPlaying=true; playPauseBtn.innerHTML='&#9646;&#9646;';
+      }
+    });
   });
 
   var shuffleBtn = document.getElementById('shuffleBtn');
